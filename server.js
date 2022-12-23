@@ -1,9 +1,10 @@
 const app = require('./app');
+const CONFIG = require('./config/config')
+const { connetToMongoDB } = require("./db");
 
 
-const PORT = process.env.PORT || 8000
+connetToMongoDB();
 
-
-app.listen(PORT, () => {
-    console.log(`app is listening on the port ${PORT}`);
+app.listen(CONFIG.PORT, () => {
+    console.log(`app is listening on the port ${CONFIG.PORT}`);
   });
