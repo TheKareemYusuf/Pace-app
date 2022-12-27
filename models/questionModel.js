@@ -27,14 +27,14 @@ const QuestionSchema = new mongoose.Schema(
     },
     creatorName: {
       type: String,
-      //   get the creator from creatorSchema
-      //   ref: "User",
+        // get the creator from creatorSchema
+        ref: "Creator",
     },
     creatorId: {
       type: mongoose.Schema.Types.ObjectId,
-      //   required: true,
-      //   get the creator from creatorSchema
-      //   ref: "User",
+        required: true,
+        // get the creator from creatorSchema
+        ref: "Creator",
     },
     state: {
       type: String,
