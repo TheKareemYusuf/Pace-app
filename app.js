@@ -1,22 +1,23 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+
+const AppError = require("./utils/appError");
+const globalErrorHandler = require("./controllers/errorController");
+
 const questionRouter = require("./routes/questionRoutes");
 const creatorRouter = require("./routes/creatorRoutes");
-const creatorAuthRouter = require('./routes/creatorAuthRoutes');
-
+const creatorAuthRouter = require("./routes/creatorAuthRoutes");
 
 const app = express();
 
 // Middlewares
-
 
 // Middleware to parse user information
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Requiring authentication middleware
-require('./authentication/creatorAuth')
-
+require("./authentication/creatorAuth");
 
 // Landing page routes
 app.get("/", (req, res) => {
@@ -33,5 +34,11 @@ app.use("/api/v1/", creatorAuthRouter);
 app.use("/api/v1/creators", creatorRouter);
 app.use("/api/v1/questions", questionRouter);
 
+// unknown routes/endpoints
+app.all("*", (req, res, next) => {
+  next(new AppError(`unknown route!, ${req.originalUrl}  does not exist`, 404));
+});
+
+app.use(globalErrorHandler);
 
 module.exports = app;

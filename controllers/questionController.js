@@ -1,5 +1,5 @@
 const Question = require("./../models/questionModel");
-// const AppError = require('./../utils/globalErrorHandler');
+const AppError = require('../utils/appError');
 
 
 // Get all questions
@@ -28,10 +28,7 @@ const getQuestion = async (req, res, next) => {
     const question = await Question.findById(id)
 
     if(!question) {
-      return res.status(404).json({
-        status: "fail",
-        message: "Question not found"
-      })
+      return next(new AppError('Question with the ID not found', 404) )
     }
 
     res.status(200).json({
@@ -43,7 +40,6 @@ const getQuestion = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
-  
 };
 
 const createQuestion = async (req, res, next) => {
@@ -82,10 +78,7 @@ const updateQuestion = async (req, res, next) => {
   const oldQuestion = await Question.findById(id)
 
   if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
-    return res.status(404).json({
-      status: "fail",
-      message: "You cannot edit as you're not the creator",
-    });
+    return next(new AppError("You cannot edit as you're not the author", 403))
   }
 
   const question = await Question.findByIdAndUpdate(id, questionUpdate, {
@@ -94,11 +87,8 @@ const updateQuestion = async (req, res, next) => {
     context: "query",
   });
 
-  if (!question) {
-    return res.status(404).json({
-      status: "fail",
-      message: "Question not found",
-    });
+  if(!question) {
+    return next(new AppError('Question not found', 404) )
   }
 
   res.status(200).json({
@@ -114,16 +104,17 @@ const updateQuestion = async (req, res, next) => {
 const deleteQuestion = async (req, res, next) => {
  try {
     const id = req.params.id;
-    const oldBlog = await Question.findById(id);
+    const oldQuestion = await Question.findById(id);
+
+    if(!oldQuestion) {
+      return next(new AppError('Question not found', 404) )
+    }
 
     // Checking if the user attempting to delete is the author 
-    // if (req.user._id.toString() !== oldBlog.authorId._id.toString()) {
-    //   return res.status(404).json({
-    //     status: "fail",
-    //     message: "You cannot delete as you're not the author",
-    //   });
-    //   // console.log(req.user._id.toString(), oldBlog.authorId._id.toString());
-    // }
+    if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
+      return next(new AppError("You cannot delete as you're not the author", 403))
+    }
+    
     await Question.findByIdAndRemove(id);
 
   res.status(200).json({

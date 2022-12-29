@@ -57,6 +57,11 @@ const CreatorSchema = new mongoose.Schema({
     select: false,
   },
   // bankDetails: BankDetailsSchema,
+  role: {
+    type: String,
+    default: "creator",
+    enum: ["creator", "admin"],
+  }
 });
 
 
