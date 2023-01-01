@@ -6,6 +6,7 @@ const CreatorSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   confirmPassword: Joi.string().required(),
+  role: Joi.string()
   // phoneNumber: Joi.string(),
     // .regex(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/i)
     // .required(),

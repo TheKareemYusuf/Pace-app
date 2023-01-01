@@ -30,7 +30,7 @@ passport.use(
   "signup",
   new passportCustom(async (req, next) => {
     try {
-      const { email, firstName, lastName, password, confirmPassword } =
+      const { email, firstName, lastName, password, confirmPassword, role } =
         req.body;
       const user = await Creator.create({
         email,
@@ -38,6 +38,7 @@ passport.use(
         lastName,
         password,
         confirmPassword,
+        role
       }); 
 
       return next(null, user);

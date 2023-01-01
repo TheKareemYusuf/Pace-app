@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const AppError = require("./utils/appError");
+const {AppError} = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 
 const questionRouter = require("./routes/questionRoutes");
@@ -9,6 +9,10 @@ const creatorRouter = require("./routes/creatorRoutes");
 const creatorAuthRouter = require("./routes/creatorAuthRoutes");
 
 const app = express();
+
+
+console.log(app.get('env'));
+console.log(process.env.NODE_ENV);
 
 // Middlewares
 

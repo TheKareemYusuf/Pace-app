@@ -9,7 +9,7 @@ const QuestionSchema = new mongoose.Schema(
       trim: true,
     },
     questionImageUrl: [String],
-    answers: {
+    answerOptions: {
         type: [{
           type: String,
           required: true
@@ -41,6 +41,11 @@ const QuestionSchema = new mongoose.Schema(
       default: "pending",
       enum: ["pending", "approved", "rejected"],
     },
+    mode: {
+      type: String,
+      default: "practice",
+      enum: ["practice", "live"],
+    }
   },
   { timestamps: true }
 );
