@@ -216,5 +216,6 @@ module.exports = {
   getQuestion,
   createQuestion,
   updateQuestion,
+  updateQuestionState,
   deleteQuestion,
 };

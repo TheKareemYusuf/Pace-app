@@ -27,6 +27,10 @@ router
     passport.authenticate("jwt", { session: false }),
     questionController.updateQuestion
   )
+  .patch(
+    passport.authenticate("jwt", { session: false }),
+    questionController.updateQuestionState
+  )
   .delete(
     passport.authenticate("jwt", { session: false }),
     questionController.deleteQuestion
