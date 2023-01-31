@@ -2,6 +2,9 @@ const express = require("express");
 const passport = require("passport");
 const questionController = require("./../controllers/questionController");
 const QuestionValidationMW = require("./../validators/question.validator");
+const restrictToMW = require('./../authentication/restrictionHandler');
+
+
 
 const router = express.Router();
 
@@ -25,6 +28,7 @@ router
   )
   .put(
     passport.authenticate("jwt", { session: false }),
+    // restrictToMW.restrictTo('admin'),
     questionController.updateQuestion
   )
   .patch(

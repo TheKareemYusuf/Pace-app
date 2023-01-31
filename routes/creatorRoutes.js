@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const creatorController = require("./../controllers/creatorController");
 const CreatorValidationMW = require("./../validators/creator.validation");
+const restrictToMW = require('./../authentication/restrictionHandler');
 
 const router = express.Router();
 
@@ -25,10 +26,12 @@ router
   )
   .put(
     passport.authenticate("jwt", { session: false }),
+    restrictToMW.restrictTo('admin'),
     creatorController.updateCreator
   )
   .delete(
     passport.authenticate("jwt", { session: false }),
+    restrictToMW.restrictTo('admin'),
     creatorController.deleteCreator
   );
 

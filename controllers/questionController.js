@@ -11,6 +11,7 @@ const getAllQuestions = async (req, res, next) => {
     // use the id to query the database to get role
     const user = await Creator.findById(id);
 
+    console.log(user.role);
     if (user.role === "creator") {
       // const questions = await Question.find().where("creatorId").equals(id);
 
@@ -194,11 +195,12 @@ const deleteQuestion = async (req, res, next) => {
     }
 
     // Checking if the user attempting to delete is the author
-    if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
-      return next(
-        new AppError("You cannot delete as you're not the author", 403)
-      );
-    }
+    // if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
+    //   return next(
+    //     new AppError("You cannot delete as you're not the author", 403)
+    //   );
+    // }
+    
 
     await Question.findByIdAndRemove(id);
 

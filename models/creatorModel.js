@@ -59,11 +59,10 @@ const CreatorSchema = new mongoose.Schema({
   // bankDetails: BankDetailsSchema,
   role: {
     type: String,
-    default: "creator",
     enum: ["creator", "admin"],
-  }
+    default: "creator",
+  },
 });
-
 
 CreatorSchema.pre("save", async function (next) {
   const user = this;
