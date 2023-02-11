@@ -1,5 +1,7 @@
 const Creator = require('./../models/creatorModel');
 
+
+
 const getAllCreators = (req, res) => {
     res.status(200).json({
       status: "success",

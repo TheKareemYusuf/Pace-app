@@ -13,7 +13,7 @@ const restrictTo = (...roles) => {
       // use the id to query the database to get role
       const user = await Creator.findById(id);
   
-      console.log(req);
+      // console.log(req);
       if (!roles.includes(user.role)) {
         return next(
           new AppError("You do not have permission to perform this action", 403)

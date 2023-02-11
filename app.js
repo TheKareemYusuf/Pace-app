@@ -1,12 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const {AppError} = require("./utils/appError");
+const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 
 const questionRouter = require("./routes/questionRoutes");
 const creatorRouter = require("./routes/creatorRoutes");
 const creatorAuthRouter = require("./routes/creatorAuthRoutes");
+const inviteRouter = require('./routes/inviteRoutes');
 
 const app = express();
 
@@ -37,10 +38,11 @@ app.get("/", (req, res) => {
 app.use("/api/v1/", creatorAuthRouter);
 app.use("/api/v1/creators", creatorRouter);
 app.use("/api/v1/questions", questionRouter);
+app.use("/api/v1/invites", inviteRouter)
 
 // unknown routes/endpoints
 app.all("*", (req, res, next) => {
-  next(new AppError(`unknown route!, ${req.originalUrl}  does not exist`, 404));
+  return next(new AppError(`unknown route!, ${req.originalUrl}  does not exist`, 404));
 });
 
 app.use(globalErrorHandler);

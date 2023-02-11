@@ -8,7 +8,7 @@
 //   });
 // };
 
-const {AppError} = require("./../utils/appError");
+const AppError = require("./../utils/appError");
 const CONFIG = require("./../config/config");
 
 
@@ -52,13 +52,13 @@ const sendErrorProd = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
       status: err.status,
-      message: err.message
+      message: err.message,
     });
     
     // Programming or other unknown error: don't leak error details
   } else {
     // 1) Log error
-    console.error('ERROR 💥', err);
+    // console.error('ERROR 💥', err);
 
     // 2) Send generic message
     res.status(500).json({

@@ -6,7 +6,7 @@ const CONFIG = require("./../config/config");
 const authRouter = express.Router();
 
 const CreatorValidationMW = require("./../validators/creator.validation");
-
+ 
 authRouter.post(
   "/signup",
   CreatorValidationMW,

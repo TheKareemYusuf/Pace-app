@@ -11,7 +11,7 @@ const getAllQuestions = async (req, res, next) => {
     // use the id to query the database to get role
     const user = await Creator.findById(id);
 
-    console.log(user.role);
+    // console.log(user.role);
     if (user.role === "creator") {
       // const questions = await Question.find().where("creatorId").equals(id);
 
@@ -69,7 +69,7 @@ const getQuestion = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error);
+    next(error.message);
   }
 };
 
