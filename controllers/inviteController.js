@@ -1,12 +1,12 @@
 const Invite = require("./../models/adminInviteModel");
 const Creator = require("./../models/creatorModel");
 const AppError = require("./../utils/appError");
-const sendEmail = require('./../utils/email');
+const sendEmail = require("./../utils/email");
 
 const generateInviteLink = async (req, res, next) => {
   try {
     // Grab email from the req object
-    const userEmail = req.body.email
+    const userEmail = req.body.email;
     // 1. Get user email from the req object
     const user = await Creator.findOne({ email: userEmail });
 
@@ -52,41 +52,42 @@ const generateInviteLink = async (req, res, next) => {
 };
 
 const getInvitationLinkPage = async (req, res, next) => {
-    try {
-      const invite = await Invite.findOne({ token: req.params.token });
-      if (!invite) {
-        return next(new AppError("Token does not exist", 404))
-      }
-      if (invite.isExpired()) {
-        return next(new AppError("Token is expired", 401))
-      }
-
-      res.status(200).json({
-        status: "success",
-        message: "kindly fill the form below",
-      });
-    } catch (error) {
-      next(error)
+  try {
+    console.log({ token: req.params.token });
+    const invite = await Invite.findOne({ token: req.params.token });
+    if (!invite) {
+      return next(new AppError("Token does not exist", 404));
     }
-  };
-  
+    if (invite.isExpired()) {
+      return next(new AppError("Token is expired", 401));
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "kindly fill the form below",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const verifyInviteLink = async (req, res, next) => {
   try {
     const invite = await Invite.findOne({ token: req.params.token });
     if (!invite) {
-      return next(new AppError("Invalid invite link", 404))
+      return next(new AppError("Invalid invite link", 404));
     }
     if (invite.isExpired()) {
-      return next(new AppError("Invitation has expired", 401))
+      return next(new AppError("Invitation has expired", 401));
     }
 
-    // res.status(200).json({
-    //   status: "success",
-    //   message: "Now register",
-    // });
-    res.redirect('/signup')
+    res.status(200).json({
+      status: "success",
+      message: "Now register",
+    });
+    // return res.redirect("signup");
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
 
