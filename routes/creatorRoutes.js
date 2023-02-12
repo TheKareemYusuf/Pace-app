@@ -16,6 +16,7 @@ router
   .route("/")
   .get(
     passport.authenticate("jwt", { session: false }),
+    restrictToMW.restrictTo("admin"),
     creatorController.getAllCreators
   )
   .post(

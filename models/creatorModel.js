@@ -62,6 +62,11 @@ const CreatorSchema = new mongoose.Schema({
     enum: ["creator", "admin"],
     default: "creator",
   },
+  status: {
+    type: String, 
+    enum: ["active", "non-active", "deactivated"],
+    default: "active"
+  }
 });
 
 CreatorSchema.pre("save", async function (next) {
