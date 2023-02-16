@@ -29,16 +29,17 @@ router
   .route("/:id")
   .get(
     passport.authenticate("jwt", { session: false }),
+    restrictToMW.restrictTo("admin"),
     creatorController.getCreator
   )
   .put(
     passport.authenticate("jwt", { session: false }),
-    // restrictToMW.restrictTo('admin'),
-    creatorController.updateCreator
+    restrictToMW.restrictTo('admin'),
+    creatorController.updateCreatorStatus
   )
   .delete(
     passport.authenticate("jwt", { session: false }),
-    // restrictToMW.restrictTo('admin'),
+    restrictToMW.restrictTo("admin"),
     creatorController.deleteCreator
   );
 

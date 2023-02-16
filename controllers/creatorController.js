@@ -31,6 +31,19 @@ const getAllCreators = async (req, res, next) => {
 
 const getCreator = async (req, res, next) => {
   try {
+    const id = req.params.id;
+    const creator = await Creator.findById(id);
+
+    if (!creator) {
+      return next(new AppError("Creator not found", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        creator,
+      },
+    });
   } catch (error) {
     next(error)
   }
@@ -43,24 +56,83 @@ const createCreator = (req, res, next) => {
   });
 };
 
-const updateCreator = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: "update a creator",
-  });
+const updateCreatorStatus =  async (req, res, next) => {
+  try {
+      let  status  = req.body.status;
+      const id = req.params.id;
+  
+      // const oldCreator = await Creator.findById(id);
+  
+      // Checking if the user attempting to update is the author 
+      // if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
+      //   return next(
+      //     new AppError("You cannot edit as you're not the author", 403)
+      //   );
+      // } 
+  
+      if (
+        !(
+          status &&
+          (status.toLowerCase() === "active" || status.toLowerCase() === "non-active" || status.toLowerCase() === "deactivated")
+        )
+      ) {
+        return next (new AppError("Please provide a valid status"));
+      }
+  
+      const creator = await Creator.findByIdAndUpdate(
+        id,
+        { status: status.toLowerCase() },
+        { new: true, runValidators: true, context: "query" }
+      );
+  
+      if (!creator) {
+        return res.status(404).json({
+          status: "fail",
+          message: "Question not found",
+        });
+      }
+  
+      res.status(200).json({
+        status: "success",
+        data: creator,
+      });
+  } catch (error) {
+    next(error)
+  }
 };
 
-const deleteCreator = (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: "delete a creator",
-  });
+const deleteCreator = async (req, res, next) => {
+try {
+  const id = req.params.id;
+    const oldCreator = await Creator.findById(id);
+
+    if (!oldCreator) {
+      return next(new AppError("Creator not found", 404));
+    }
+
+    // Checking if the user attempting to delete is the author
+    // if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
+    //   return next(
+    //     new AppError("You cannot delete as you're not the author", 403)
+    //   );
+    // }
+    
+
+    await Creator.findByIdAndRemove(id);
+
+    res.status(200).json({
+      status: "question successfully deleted",
+      data: null,
+    });
+} catch (error) {
+  next(error)
+}
 };
 
 module.exports = {
   getAllCreators,
   getCreator,
   createCreator,
-  updateCreator,
+  updateCreatorStatus,
   deleteCreator,
 };
