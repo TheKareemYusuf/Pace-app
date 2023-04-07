@@ -4,7 +4,7 @@ const creatorController = require("./../controllers/creatorController");
 const CreatorValidationMW = require("./../validators/creator.validation");
 const restrictToMW = require("./../authentication/restrictionHandler");
 
-const router = express.Router();
+const router = express.Router()
 
 // router.route("/invite").post(inviteController.generateInviteLink);
 // router
