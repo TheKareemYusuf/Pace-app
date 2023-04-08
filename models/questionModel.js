@@ -20,10 +20,16 @@ const QuestionSchema = new mongoose.Schema(
         type: String,
         required: true
     },
-    subject: {
-      type: String,
-      required: [true, "Question must be set under a question"],
-      trim: true,
+    // subject: {
+    //   type: String,
+    //   required: [true, "Question must be set under a question"],
+    //   trim: true,
+    // },
+    subjectId: {
+      type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        // get the Subject from SubjectSchema
+        ref: "Subject",
     },
     creatorName: {
       type: String,

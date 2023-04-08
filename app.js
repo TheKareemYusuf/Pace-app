@@ -8,6 +8,7 @@ const questionRouter = require("./routes/questionRoutes");
 const creatorRouter = require("./routes/creatorRoutes");
 const creatorAuthRouter = require("./routes/creatorAuthRoutes");
 const inviteRouter = require('./routes/inviteRoutes');
+const subjectRouter = require('./routes/subjectRoutes');
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/v1/", creatorAuthRouter);
 app.use("/api/v1/creators", creatorRouter);
 app.use("/api/v1/questions", questionRouter);
 app.use("/api/v1/invites", inviteRouter)
+app.use("/api/v1/subjects", subjectRouter);
 
 // unknown routes/endpoints
 app.all("*", (req, res, next) => {
