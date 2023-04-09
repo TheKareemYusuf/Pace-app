@@ -1,11 +1,8 @@
 const passport = require("passport");
 const passportCustom = require("passport-custom");
-const CONFIG = require('./../config/config')
+const CONFIG = require("./../config/config");
 
-
-const Creator = require("./../models/creatorModel");
-
-
+const User = require("./../models/userModel");
 
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;
@@ -14,7 +11,7 @@ passport.use(
   new JWTstrategy(
     {
       secretOrKey: CONFIG.SECRET_KEY,
-      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(), 
+      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     },
     async (token, next) => {
       try {
@@ -30,16 +27,12 @@ passport.use(
   "signup",
   new passportCustom(async (req, next) => {
     try {
-      const { email, firstName, lastName, password, confirmPassword } =
-        req.body;
-      const user = await Creator.create({
-        email,
-        firstName,
-        lastName,
+      const { phoneNumber, password, confirmPassword } = req.body;
+      const user = await User.create({
+        phoneNumber,
         password,
         confirmPassword,
-        // role
-      }); 
+      });
 
       return next(null, user);
     } catch (error) {
@@ -47,13 +40,13 @@ passport.use(
     }
   })
 );
- 
+
 passport.use(
   "login",
   new passportCustom(async (req, next) => {
     try {
-      const { email, password } = req.body;
-      const user = await Creator.findOne({ email });
+      const { phoneNumber, password } = req.body;
+      const user = await User.findOne({ phoneNumber });
 
       if (!user) {
         return next(null, false, { message: "User not found" });

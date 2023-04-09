@@ -5,11 +5,11 @@ const CONFIG = require("./../config/config");
 
 const authRouter = express.Router();
 
-const CreatorValidationMW = require("./../validators/creator.validation");
+const UserValidationMW = require("./../validators/user.validation");
  
 authRouter.post(
   "/signup",
-  CreatorValidationMW,
+  UserValidationMW,
   passport.authenticate("signup", { session: false }),
   async (req, res, next) => {
     const body = {

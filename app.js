@@ -10,6 +10,9 @@ const creatorAuthRouter = require("./routes/creatorAuthRoutes");
 const inviteRouter = require('./routes/inviteRoutes');
 const subjectRouter = require('./routes/subjectRoutes');
 
+const userAuthRouter = require("./routes/userAuthRoutes");
+
+
 const app = express();
 
 
@@ -22,8 +25,11 @@ console.log(process.env.NODE_ENV);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Requiring authentication middleware
+// Creator authentication middleware
 require("./authentication/creatorAuth");
+
+// User authentication middleware
+require("./authentication/userAuth");
 
 // Landing page routes
 app.get("/", (req, res) => {
@@ -35,12 +41,15 @@ app.get("/", (req, res) => {
   });
 });
 
-// ROUTES
+// Admin and creator ROUTES
 app.use("/api/v1/", creatorAuthRouter);
 app.use("/api/v1/creators", creatorRouter);
 app.use("/api/v1/questions", questionRouter);
 app.use("/api/v1/invites", inviteRouter)
 app.use("/api/v1/subjects", subjectRouter);
+
+// Students ROUTES 
+app.use("/api/v1/user/", userAuthRouter)
 
 // unknown routes/endpoints
 app.all("*", (req, res, next) => {

@@ -104,7 +104,7 @@ const createQuestion = async (req, res, next) => {
   }
 };
 
-// This role will be reserved for super admin
+// This will be reserved for super admin
 const updateQuestionState = async (req, res, next) => {
   try {
     let  state  = req.body.state;
