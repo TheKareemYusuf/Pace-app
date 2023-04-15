@@ -22,28 +22,30 @@ const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
     // required: [true, "Please enter first name"],
-    trim: true
+    trim: true,
   },
   lastName: {
     type: String,
     // required: [true, "Please enter last name"],
-    trim: true
+    trim: true,
   },
   username: {
     type: String,
     unique: true,
+    sparse: true,
     // required: [true, "username is compulsory"],
     match: /^[a-zA-Z]+[a-zA-Z0-9]*$/,
     // The regex pattern ^[a-zA-Z]+[a-zA-Z0-9]*$ ensures that the username
     // starts with an alphabet, followed by alphanumeric characters (if any).
     // The + sign indicates one or more occurrences, and the * sign indicates
     // zero or more occurrences.
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
     // required: [true, "Please provide your email"],
     unique: true,
+    sparse: true,
     lowercase: true,
     validate: [validator.isEmail, "Please provide a valid email"],
   },
@@ -77,11 +79,13 @@ const UserSchema = new mongoose.Schema({
     // default: "creator",
   },
   status: {
-    type: String, 
+    type: String,
     enum: ["active", "non-active", "deactivated"],
-    default: "active"
-  }
-});
+    default: "active",
+  },
+},
+{timestamps: true}
+);
 
 UserSchema.pre("save", async function (next) {
   const user = this;
@@ -103,4 +107,3 @@ UserSchema.methods.isValidPassword = async function (password) {
 const User = mongoose.model("User", UserSchema);
 
 module.exports = User;
-

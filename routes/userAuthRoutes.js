@@ -10,7 +10,7 @@ const UserValidationMW = require("./../validators/user.validation");
 authRouter.post(
   "/signup",
   UserValidationMW,
-  passport.authenticate("signup", { session: false }),
+  passport.authenticate("user-signup", { session: false }),
   async (req, res, next) => {
     const body = {
       _id: req.user._id,
@@ -21,6 +21,9 @@ authRouter.post(
       expiresIn: "1h",
     });
 
+     // Remove password from output
+     req.user.password = undefined;
+
     res.json({
       message: "Signup successful",
       user: req.user,
@@ -30,7 +33,7 @@ authRouter.post(
 );
 
 authRouter.post("/login", async (req, res, next) => {
-  passport.authenticate("login", async (err, user, info) => {
+  passport.authenticate("user-login", async (err, user, info) => {
     try {
       if (err) {
         return next(err);

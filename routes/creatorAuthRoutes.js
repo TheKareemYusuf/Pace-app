@@ -6,31 +6,34 @@ const CONFIG = require("./../config/config");
 const authRouter = express.Router();
 
 const CreatorValidationMW = require("./../validators/creator.validation");
- 
+
 authRouter.post(
   "/signup",
   CreatorValidationMW,
-  passport.authenticate("signup", { session: false }),
+  passport.authenticate("creator-signup", { session: false }),
   async (req, res, next) => {
     const body = {
       _id: req.user._id,
-      email: req.user.email, 
+      email: req.user.email,
       firstName: req.user.firstName,
     };
     const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
       expiresIn: "1h",
     });
 
+    // Remove password from output
+    req.user.password = undefined;
+    
     res.json({
       message: "Signup successful",
       user: req.user,
-      token
+      token,
     });
   }
 );
 
 authRouter.post("/login", async (req, res, next) => {
-  passport.authenticate("login", async (err, user, info) => {
+  passport.authenticate("creator-login", async (err, user, info) => {
     try {
       if (err) {
         return next(err);

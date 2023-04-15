@@ -24,7 +24,7 @@ passport.use(
 );
 
 passport.use(
-  "signup",
+  "user-signup",
   new passportCustom(async (req, next) => {
     try {
       const { phoneNumber, password, confirmPassword } = req.body;
@@ -42,11 +42,14 @@ passport.use(
 );
 
 passport.use(
-  "login",
+  "user-login",
   new passportCustom(async (req, next) => {
     try {
-      const { phoneNumber, password } = req.body;
-      const user = await User.findOne({ phoneNumber });
+      const { phoneNumberOrUsername, password } = req.body;
+      // const user = await User.findOne({ phoneNumber });
+      const user = await User.findOne({
+        $or: [{ phoneNumber: phoneNumberOrUsername }, { username: phoneNumberOrUsername }],
+      });
 
       if (!user) {
         return next(null, false, { message: "User not found" });

@@ -9,7 +9,7 @@ const UserSchema = Joi.object({
   confirmPassword: Joi.string().required(),
   role: Joi.string(),
   status: Joi.string(),
-  phoneNumber: Joi.string().regex(/^\d{11}$/)
+  phoneNumber: Joi.string().regex(/^\d{11}$/).required()
   // bankDetails: {
   //   bankName: Joi.string().min(2).max(50).optional(),
   //   accountNumber: Joi.string().min(2).max(50).optional(),
