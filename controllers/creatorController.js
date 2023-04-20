@@ -88,7 +88,7 @@ const updateCreatorStatus =  async (req, res, next) => {
       if (!creator) {
         return res.status(404).json({
           status: "fail",
-          message: "Question not found",
+          message: "Creator not found",
         });
       }
   
@@ -121,7 +121,7 @@ try {
     await Creator.findByIdAndRemove(id);
 
     res.status(200).json({
-      status: "question successfully deleted",
+      status: "creator successfully deleted",
       data: null,
     });
 } catch (error) {

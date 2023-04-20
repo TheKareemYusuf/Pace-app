@@ -9,6 +9,8 @@ const creatorRouter = require("./routes/creatorRoutes");
 const creatorAuthRouter = require("./routes/creatorAuthRoutes");
 const inviteRouter = require('./routes/inviteRoutes');
 const subjectRouter = require('./routes/subjectRoutes');
+const userRouter = require('./routes/userRoutes');
+
 
 const userAuthRouter = require("./routes/userAuthRoutes");
 
@@ -47,6 +49,8 @@ app.use("/api/v1/creators/creators", creatorRouter);
 app.use("/api/v1/creators/questions", questionRouter);
 app.use("/api/v1/creators/invites", inviteRouter)
 app.use("/api/v1/creators/subjects", subjectRouter);
+app.use("/api/v1/creators/students", userRouter);
+
 
 // Students ROUTES 
 app.use("/api/v1/users/", userAuthRouter)
