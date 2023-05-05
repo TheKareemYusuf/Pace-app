@@ -53,7 +53,7 @@ passport.use(
   new passportCustom(async (req, next) => {
     try {
       const { email, password } = req.body;
-      const user = await Creator.findOne({ email });
+      const user = await Creator.findOne({ email }).select("+password");
 
       if (!user) {
         return next(null, false, { message: "User not found" });

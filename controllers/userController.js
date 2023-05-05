@@ -50,6 +50,14 @@ const createUser = (req, res, next) => {
   });
 };
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach(el => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
 const updateUserProfile = async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -58,7 +66,8 @@ const updateUserProfile = async (req, res, next) => {
 
     const oldUser = await User.findById(id);
 
-    if (req.user._id.toString() !== oldUser.id._id.toString()) {
+
+    if ((req.user._id.toString() !== oldUser._id._id.toString()) && (req.user.role !== "admin")) {
       return next(
         new AppError("You cannot update as you're not the owner", 403)
       );
@@ -74,12 +83,13 @@ const updateUserProfile = async (req, res, next) => {
     }
 
     // 2) Filtered out unwanted fields names that are not allowed to be updated
-    const filteredBody = filterObj(userUpdate, "phoneNumber");
+    // const filteredBody = filterObj(userUpdate, "phoneNumber");
 
     // 3) Update user document
-    const updatedUser = await User.findByIdAndUpdate(id, filteredBody, {
+    const updatedUser = await User.findByIdAndUpdate(id, userUpdate, {
       new: true,
       runValidators: true,
+      context: "query"
     });
 
     res.status(200).json({
@@ -146,7 +156,7 @@ const deleteUser = async (req, res, next) => {
     const oldUser = await User.findById(id);
 
     if (!oldUser) {
-      return next(new AppError("Creator not found", 404));
+      return next(new AppError("User not found", 404));
     }
 
     await User.findByIdAndRemove(id);

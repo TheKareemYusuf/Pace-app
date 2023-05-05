@@ -27,11 +27,13 @@ router
     userController.getUser
   )
   .put(
+    UserValidationMW,
     passport.authenticate("jwt", { session: false }),
     restrictToMW.restrictTo("admin"),
     userController.updateUserProfile
   )
   .patch(
+    UserValidationMW,
     passport.authenticate("jwt", { session: false }),
     restrictToMW.restrictTo("admin"),
     userController.updateUserStatus

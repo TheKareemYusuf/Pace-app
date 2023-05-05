@@ -10,6 +10,9 @@ const creatorAuthRouter = require("./routes/creatorAuthRoutes");
 const inviteRouter = require('./routes/inviteRoutes');
 const subjectRouter = require('./routes/subjectRoutes');
 const userRouter = require('./routes/userRoutes');
+const userActivityRouter = require('./routes/userActivityRoutes');
+const userPracticeRouter = require('./routes/userPracticeRoutes');
+
 
 
 const userAuthRouter = require("./routes/userAuthRoutes");
@@ -54,6 +57,8 @@ app.use("/api/v1/creators/students", userRouter);
 
 // Students ROUTES 
 app.use("/api/v1/users/", userAuthRouter)
+app.use("/api/v1/users/activity", userActivityRouter)
+app.use("/api/v1/users/practice", userPracticeRouter)
 
 // unknown routes/endpoints
 app.all("*", (req, res, next) => {

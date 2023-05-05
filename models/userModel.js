@@ -51,26 +51,61 @@ const UserSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    required: true,
+    required: function () {
+      return this.isNew || this.isModified("password");
+    },
+    // required: [true, "Phone number is required"],
     match: /^\d{11}$/,
     unique: true,
   },
+  // password: {
+  //   type: String,
+  //   required: function () {
+  //     return this.isNew || this.isModified("password");
+  //   },
+  //   // validate: {
+  //   //   validator: function() {
+  //   //     return this.isNew || this.isModified("password");
+  //   //   },
+  //   //   message: "Password is required",
+  //   // },
+  //   minlength: 8,
+  //   select: false,
+  // },
+  // confirmPassword: {
+  //   type: String,
+  //   required: function () {
+  //     return this.isNew || this.isModified("password");
+  //   },
+  //   // required: [true, "Please confirm your password"],
+  //   validate: {
+  //     validator: function (el) {
+  //       return el === this.password;
+  //     },
+  //     message: "Passwords are not the same!",
+  //   },
+  //   select: false,
+  // },
   password: {
     type: String,
-    required: [true, "Please enter your password"],
     minlength: 8,
-    select: false
+    select: false,
+    required: function () {
+      return this.isNew || this.isModified("password");
+    },
   },
   confirmPassword: {
     type: String,
-    required: [true, "Please confirm your password"],
+    select: false,
     validate: {
       validator: function (el) {
         return el === this.password;
       },
       message: "Passwords are not the same!",
     },
-    select: false,
+    required: function () {
+      return this.isNew || this.isModified("password");
+    },
   },
   // bankDetails: BankDetailsSchema,
   gender: {
@@ -88,8 +123,15 @@ const UserSchema = new mongoose.Schema({
 {timestamps: true}
 );
 
+// UserSchema.methods.isPasswordRequired = function() {
+//   return this.isNew || this.isModified("password");
+// };
+
 UserSchema.pre("save", async function (next) {
-  const user = this;
+  // const user = this;
+
+  if (!this.isModified('password')) return next();
+
   const hash = await bcrypt.hash(this.password, 12);
 
   this.password = hash;
@@ -108,3 +150,5 @@ UserSchema.methods.isValidPassword = async function (password) {
 const User = mongoose.model("User", UserSchema);
 
 module.exports = User;
+
+

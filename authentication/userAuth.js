@@ -49,7 +49,7 @@ passport.use(
       // const user = await User.findOne({ phoneNumber });
       const user = await User.findOne({
         $or: [{ phoneNumber: phoneNumberOrUsername }, { username: phoneNumberOrUsername }],
-      });
+      }).select("+password");
 
       if (!user) {
         return next(null, false, { message: "User not found" });
