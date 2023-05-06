@@ -35,7 +35,7 @@ const CreatorSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: [validator.isEmail, "Please provide a valid email"],
-  },
+  }, 
   // phoneNumber: {
   //   type: String,
   //   // required: true,

@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     unique: true,
     sparse: true,
-    // required: [true, "username is compulsory"],
+    required: [true, "username is compulsory"],
     match: /^[a-zA-Z]+[a-zA-Z0-9]*$/,
     // The regex pattern ^[a-zA-Z]+[a-zA-Z0-9]*$ ensures that the username
     // starts with an alphabet, followed by alphanumeric characters (if any).
@@ -58,34 +58,7 @@ const UserSchema = new mongoose.Schema({
     match: /^\d{11}$/,
     unique: true,
   },
-  // password: {
-  //   type: String,
-  //   required: function () {
-  //     return this.isNew || this.isModified("password");
-  //   },
-  //   // validate: {
-  //   //   validator: function() {
-  //   //     return this.isNew || this.isModified("password");
-  //   //   },
-  //   //   message: "Password is required",
-  //   // },
-  //   minlength: 8,
-  //   select: false,
-  // },
-  // confirmPassword: {
-  //   type: String,
-  //   required: function () {
-  //     return this.isNew || this.isModified("password");
-  //   },
-  //   // required: [true, "Please confirm your password"],
-  //   validate: {
-  //     validator: function (el) {
-  //       return el === this.password;
-  //     },
-  //     message: "Passwords are not the same!",
-  //   },
-  //   select: false,
-  // },
+
   password: {
     type: String,
     minlength: 8,
@@ -113,19 +86,40 @@ const UserSchema = new mongoose.Schema({
     enum: ["Male", "Female"],
     // required: [true, "Please select your gender"],
     // default: "creator",
-  },
+  }, 
   status: {
     type: String,
     enum: ["active", "non-active", "deactivated"],
     default: "active",
   },
+  dateOfBirth: {
+    type: Date,
+    // required: true
+  },
+  levelOfStudy: {
+    type: String,
+  },
+  department: {
+    type: String,
+    enum: ["Arts", "Sciences", "Commercials"]
+  },
+  subjectOfInterest: {
+    type: [
+      {
+        type: String,
+      },
+    ],
+    validate: {
+      validator: function(arr) {
+        return arr.length <= 4;
+      },
+      message: "Subject of interest array can contain at most 4 elements"
+    },
+    default: [],
+  },
 },
 {timestamps: true}
 );
-
-// UserSchema.methods.isPasswordRequired = function() {
-//   return this.isNew || this.isModified("password");
-// };
 
 UserSchema.pre("save", async function (next) {
   // const user = this;

@@ -14,8 +14,8 @@ authRouter.post(
   async (req, res, next) => {
     const body = {
       _id: req.user._id,
-      email: req.user.email, 
-      firstName: req.user.firstName,
+      phoneNumber: req.user.phoneNumber, 
+      username: req.user.username,
     };
     const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
       expiresIn: "1h",
@@ -47,17 +47,17 @@ authRouter.post("/login", async (req, res, next) => {
         if (error) return next(error);
 
         const body = {
-          _id: user._id,
-          email: user.email,
-          firstName: user.firstName,
+          _id: req.user._id,
+          phoneNumber: req.user.phoneNumber, 
+          username: req.user.username,
         };
         const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
           expiresIn: "1h",
         });
 
         return res.json({
-          firstName: user.firstName,
-          email: user.email,
+          username: user.username,
+          phoneNumber: user.phoneNumber,
           token,
         });
       });

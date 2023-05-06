@@ -27,9 +27,10 @@ passport.use(
   "user-signup",
   new passportCustom(async (req, next) => {
     try {
-      const { phoneNumber, password, confirmPassword } = req.body;
+      const { phoneNumber, username, password, confirmPassword } = req.body;
       const user = await User.create({
         phoneNumber,
+        username,
         password,
         confirmPassword,
       });
