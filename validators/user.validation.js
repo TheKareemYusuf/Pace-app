@@ -17,10 +17,14 @@ const UserSchema = Joi.object({
     then: Joi.required(),
     otherwise: Joi.optional()
   }),
-  role: Joi.string(),
-  status: Joi.string(),
+  status: Joi.string().valid("active", "non-active", "deactivated").optional(),
   phoneNumber: Joi.string().regex(/^\d{11}$/).optional(),
-  gender: Joi.string().valid("Male", "Female").optional()
+  gender: Joi.string().valid("Male", "Female").optional(),
+  levelOfStudy: Joi.string(),
+  department: Joi.string().valid("Arts", "Sciences", "Commercials").optional(),
+  subjectOfInterest: Joi.array().items(Joi.string()),
+
+
   // bankDetails: {
   //   bankName: Joi.string().min(2).max(50).optional(),
   //   accountNumber: Joi.string().min(2).max(50).optional(),

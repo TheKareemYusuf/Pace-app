@@ -42,6 +42,40 @@ const getAllPracticeQuestions = async (req, res, next) => {
   }
 };
 
+const getPracticeQuestionsBySubject = async (req, res, next) => {
+    try {
+      // Grab the id of the person hitting the route from req.user
+      const id = req.user._id;
+  
+      // Use the id to query the database to get the user's role
+      const user = await User.findById(id);
+    
+      if (!user) {
+        return next(new AppError("User not found", 404));
+      }
+  
+      const subject = req.params.subject;
+      const limit = 20; // Number of random questions to retrieve
+  
+      // Query random questions based on subject and other filters if required
+      const questions = await Question.aggregate([
+        { $match: { mode: "practice", state: "approved", subject: subject } },
+        { $sample: { size: limit } }
+      ]);
+  
+      res.status(200).json({
+        status: "success",
+        result: questions.length,
+        data: {
+          questions,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+  
 module.exports = {
   getAllPracticeQuestions,
+  getPracticeQuestionsBySubject
 };

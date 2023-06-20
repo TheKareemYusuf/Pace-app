@@ -1,6 +1,8 @@
 const express = require("express");
 const passport = require("passport");
-const activityController = require("../controllers/activityController");
+// const activityController = require("../controllers/activityController");
+const practiceController = require("../controllers/practiceController");
+
 // const QuestionValidationMW = require("./../validators/question.validator");
 // const restrictToMW = require("./../authentication/restrictionHandler");
 
@@ -10,8 +12,15 @@ router
   .route("/")
   .get(
     passport.authenticate("jwt", { session: false }),
-    activityController.getAllQuestions
-  )
+    practiceController.getAllPracticeQuestions
+  );
+
+router
+  .route("/:subject")
+  .get(
+    passport.authenticate("jwt", { session: false }),
+    practiceController.getPracticeQuestionsBySubject
+  );
 //   .post(
 //     passport.authenticate("jwt", { session: false }),
 //     QuestionValidationMW,

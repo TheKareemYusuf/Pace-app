@@ -1,5 +1,10 @@
 const express = require("express");
+const CONFIG = require('./config/config')
+const sessions = require('express-session');
+const MongoStore = require("connect-mongo");
+
 const bodyParser = require("body-parser");
+
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
@@ -24,7 +29,25 @@ const app = express();
 console.log(app.get('env'));
 console.log(process.env.NODE_ENV);
 
+// creating session storage
+const sessionStore = new MongoStore({
+  mongoUrl: CONFIG.DATABASE_URL,
+  collectionName: "sessions",
+});
+
+
 // Middlewares
+// creating 24 hours from milliseconds
+const oneDay = 1000 * 60 * 60 * 24;
+
+//session middleware
+app.use(sessions({
+    secret: CONFIG.SESSION_SECRET,
+    saveUninitialized:true,
+    store: sessionStore,
+    cookie: { maxAge: oneDay },
+    resave: false
+}));
 
 // Middleware to parse user information
 app.use(bodyParser.urlencoded({ extended: false }));

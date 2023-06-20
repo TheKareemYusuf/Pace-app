@@ -6,7 +6,7 @@ const CONFIG = require("./../config/config");
 const authRouter = express.Router();
 
 const UserValidationMW = require("./../validators/user.validation");
- 
+
 authRouter.post(
   "/signup",
   UserValidationMW,
@@ -14,20 +14,23 @@ authRouter.post(
   async (req, res, next) => {
     const body = {
       _id: req.user._id,
-      phoneNumber: req.user.phoneNumber, 
+      phoneNumber: req.user.phoneNumber,
       username: req.user.username,
     };
     const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
       expiresIn: "1h",
     });
 
-     // Remove password from output
-     req.user.password = undefined;
+    // Save the JWT in the session
+    req.session.token = token;
+
+    // Remove password from output
+    req.user.password = undefined;
 
     res.json({
       message: "Signup successful",
       user: req.user,
-      token
+      token,
     });
   }
 );
@@ -48,12 +51,15 @@ authRouter.post("/login", async (req, res, next) => {
 
         const body = {
           _id: req.user._id,
-          phoneNumber: req.user.phoneNumber, 
+          phoneNumber: req.user.phoneNumber,
           username: req.user.username,
         };
         const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
           expiresIn: "1h",
         });
+
+        // Save the JWT in the session
+        req.session.token = token;
 
         return res.json({
           username: user.username,

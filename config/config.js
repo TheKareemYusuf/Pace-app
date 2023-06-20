@@ -7,5 +7,6 @@ module.exports = {
   NODE_ENV: process.env.NODE_ENV, 
   EMAIL_HOST: process.env.EMAIL_HOST,
   EMAIL_USERNAME: process.env.EMAIL_USERNAME,
-  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+  SESSION_SECRET: process.env.SESSION_SECRET
 };
