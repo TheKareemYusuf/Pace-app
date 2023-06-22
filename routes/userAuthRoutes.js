@@ -23,6 +23,7 @@ authRouter.post(
 
     // Save the JWT in the session
     req.session.token = token;
+    // req.session.userId = _id;
 
     // Remove password from output
     req.user.password = undefined;

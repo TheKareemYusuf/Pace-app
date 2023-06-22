@@ -1,0 +1,9 @@
+{
+    "_id": "ZtwfdYdGpAwHc8V6ZtDp6QCaadYdqx0x",
+    "expires": {
+        "$date": {
+            "$numberLong": "1687368195080"
+        }
+    },
+    "session": "{\"cookie\":{\"originalMaxAge\":86400000,\"expires\":\"2023-06-21T17:23:15.080Z\",\"httpOnly\":true,\"path\":\"/\"},\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjY0NDY0Mzg4MTIwNDgxOWY0OWRkNmQ4OCIsInBob25lTnVtYmVyIjoiMDkwMzI1NjU0MzYiLCJ1c2VybmFtZSI6IkZhdGhlcjA5In0sImlhdCI6MTY4NzI4MTc5NSwiZXhwIjoxNjg3Mjg1Mzk1fQ.VQsO9vZeLUEL3V1n-OT37cRFZ5uqL3RIUNpNGe1tq34\"}"
+}

@@ -21,9 +21,12 @@ authRouter.post(
       expiresIn: "1h",
     });
 
+    // Save the JWT in the session
+    req.session.token = token;
+    
     // Remove password from output
     req.user.password = undefined;
-    
+
     res.json({
       message: "Signup successful",
       user: req.user,
@@ -54,6 +57,9 @@ authRouter.post("/login", async (req, res, next) => {
         const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
           expiresIn: "1h",
         });
+
+        // Save the JWT in the session
+        req.session.token = token;
 
         return res.json({
           firstName: user.firstName,
