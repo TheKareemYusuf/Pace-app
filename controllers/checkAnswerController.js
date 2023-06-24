@@ -1,27 +1,28 @@
 const Question = require("./../models/questionModel");
 const AppError = require("../utils/appError");
-const APIFeatures = require("./../utils/apiFeatures");
 
-// Get all questions
 const checkAnswer = async (req, res, next) => {
   try {
-    // grab the id of the person hitting the route from req.body
-    const id = req.body.questionId;
-    const answer = req.body.answer
-    // use the id to query the database to get role
-    const question = await Question.findById(id);
+    const { questionId, answer } = req.body;
+
+    const question = await Question.findById(questionId);
 
     if (!question) {
       return next(new AppError("Question not found", 404));
     }
 
-    
+    if (!question.answerOptions.includes(answer)) {
+      return next(new AppError("Answer not found", 404));
+    }
+
+    const feedback = answer === question.correctAnswer ? "Correct! ✔" : "Wrong! ❌";
 
     res.status(200).json({
       status: "success",
-      data: {
-        question,
-      },
+      feedback,
+      // data: {
+      //   question,
+      // },
     });
   } catch (error) {
     next(error);
