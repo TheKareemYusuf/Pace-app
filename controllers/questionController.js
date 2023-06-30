@@ -83,6 +83,7 @@ const createQuestion = async (req, res, next) => {
       questionImageUrl,
       mode,
     } = req.body;
+    
     const newQuestion = await Question.create({
       question,
       questionImageUrl,
