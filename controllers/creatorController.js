@@ -61,14 +61,9 @@ const updateCreatorStatus =  async (req, res, next) => {
       let  status  = req.body.status;
       const id = req.params.id;
   
-      // const oldCreator = await Creator.findById(id);
-  
-      // Checking if the user attempting to update is the author 
-      // if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
-      //   return next(
-      //     new AppError("You cannot edit as you're not the author", 403)
-      //   );
-      // } 
+      if (req.user.role !== "admin") {
+        return new AppError("You are not authorized", 403)
+      }
   
       if (
         !(
