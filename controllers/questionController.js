@@ -114,11 +114,15 @@ const updateQuestionState = async (req, res, next) => {
     const oldQuestion = await Question.findById(id);
 
     // Checking if the user attempting to update is the author 
-    if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
-      return next(
-        new AppError("You cannot edit as you're not the author", 403)
-      );
-    } 
+    // if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
+    //   return next(
+    //     new AppError("You cannot edit as you're not the author", 403)
+    //   );
+    // } 
+
+    if (req.user.role !== "admin") {
+      return new AppError("You are not authorized", 403)
+    }
 
     if (
       !(
@@ -126,7 +130,7 @@ const updateQuestionState = async (req, res, next) => {
         (state.toLowerCase() === "pending" || state.toLowerCase() === "approved" || state.toLowerCase() === "rejected")
       )
     ) {
-      throw new Error("Please provide a valid state");
+      return new AppError("Please provide a valid state", 400);
     }
 
     const question = await Question.findByIdAndUpdate(
