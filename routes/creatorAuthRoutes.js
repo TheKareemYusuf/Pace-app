@@ -6,7 +6,7 @@ const CONFIG = require("./../config/config");
 const authRouter = express.Router();
 
 const CreatorValidationMW = require("./../validators/creator.validation");
-
+ 
 authRouter.post(
   "/signup",
   CreatorValidationMW,
@@ -16,6 +16,7 @@ authRouter.post(
       _id: req.user._id,
       email: req.user.email,
       firstName: req.user.firstName,
+      role: req.user.role
     };
     const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
       expiresIn: "1h",
@@ -53,6 +54,7 @@ authRouter.post("/login", async (req, res, next) => {
           _id: user._id,
           email: user.email,
           firstName: user.firstName,
+          role: user.role
         };
         const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
           expiresIn: "1h",
@@ -64,6 +66,7 @@ authRouter.post("/login", async (req, res, next) => {
         return res.json({
           firstName: user.firstName,
           email: user.email,
+          role: user.role,
           token,
         });
       });

@@ -32,7 +32,7 @@ router
     restrictToMW.restrictTo("admin"),
     creatorController.getCreator
   )
-  .put(
+  .patch(
     passport.authenticate("jwt", { session: false }),
     restrictToMW.restrictTo('admin'),
     creatorController.updateCreatorStatus

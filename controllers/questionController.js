@@ -160,11 +160,14 @@ const updateQuestion = async (req, res, next) => {
 
     const oldQuestion = await Question.findById(id);
 
-    if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
-      return next(
-        new AppError("You cannot edit as you're not the author", 403)
-      );
+    if (req.user.role === "creator") {
+      if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
+        return next(
+          new AppError("You cannot edit as you're not the author", 403)
+        );
+      }
     }
+    
 
     const question = await Question.findByIdAndUpdate(id, questionUpdate, {
       new: true,
