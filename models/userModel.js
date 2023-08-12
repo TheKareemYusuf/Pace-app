@@ -105,7 +105,7 @@ const UserSchema = new mongoose.Schema({
   },
   subjectOfInterest: {
     type: [
-      {
+      { 
         type: String,
       },
     ],

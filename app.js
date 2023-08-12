@@ -2,12 +2,16 @@ const express = require("express");
 const CONFIG = require('./config/config')
 const sessions = require('express-session');
 const MongoStore = require("connect-mongo");
+const cors = require('cors');
+
 
 const bodyParser = require("body-parser");
 
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
+
+
 
 const questionRouter = require("./routes/questionRoutes");
 const creatorRouter = require("./routes/creatorRoutes");
@@ -25,6 +29,8 @@ const userAuthRouter = require("./routes/userAuthRoutes");
 
 
 const app = express();
+
+app.use(cors());
 
 
 console.log(app.get('env'));

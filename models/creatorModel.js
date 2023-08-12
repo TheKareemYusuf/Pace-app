@@ -60,6 +60,20 @@ const CreatorSchema = new mongoose.Schema({
     select: false,
   },
   // bankDetails: BankDetailsSchema,
+  creatorSubjectOfInterest: {
+    type: [
+      {
+        type: String,
+      },
+    ],
+    validate: {
+      validator: function(arr) {
+        return arr.length <= 4;
+      },
+      message: "Subject of interest can only contain at most 4 elements"
+    },
+    default: [],
+  },
   role: {
     type: String,
     enum: ["creator", "admin"],
