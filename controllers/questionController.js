@@ -2,6 +2,41 @@ const Question = require("./../models/questionModel");
 const AppError = require("../utils/appError");
 const APIFeatures = require('./../utils/apiFeatures');
 const Creator = require("./../models/creatorModel");
+const multer = require('multer');
+const sharp = require('sharp');
+
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter
+});
+
+const uploadQuestionPicture = upload.single('questionImageUrl');
+
+const resizeQuestionPicture = async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/${req.file.filename}`);
+
+  next();
+};
+
 
 // Get all questions
 const getAllQuestions = async (req, res, next) => {
@@ -140,10 +175,7 @@ const updateQuestionState = async (req, res, next) => {
     );
 
     if (!question) {
-      return res.status(404).json({
-        status: "fail",
-        message: "Question not found",
-      });
+      return next(new AppError("Question not found", 404))
     }
 
     res.status(200).json({
@@ -228,4 +260,6 @@ module.exports = {
   updateQuestion,
   updateQuestionState,
   deleteQuestion,
+  uploadQuestionPicture,
+  resizeQuestionPicture
 };

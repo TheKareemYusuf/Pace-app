@@ -1,3 +1,4 @@
+// const { string } = require("joi");
 const mongoose = require("mongoose");
 
 const QuestionSchema = new mongoose.Schema(
@@ -8,7 +9,9 @@ const QuestionSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    questionImageUrl: [String],
+    questionImageUrl: {
+      type: [{ type: String }],
+    },
     answerOptions: {
       type: [
         {
@@ -67,7 +70,7 @@ const QuestionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
- 
+
 const Question = mongoose.model("Question", QuestionSchema);
 
 module.exports = Question;

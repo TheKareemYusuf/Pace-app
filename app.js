@@ -98,6 +98,6 @@ app.all("*", (req, res, next) => {
   return next(new AppError(`unknown route!, ${req.originalUrl}  does not exist`, 404));
 });
 
-app.use(globalErrorHandler);
+app.use(globalErrorHandler.errorHandler);
 
 module.exports = app;

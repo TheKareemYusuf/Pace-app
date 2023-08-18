@@ -83,10 +83,7 @@ const updateCreatorStatus = async (req, res, next) => {
     );
 
     if (!creator) {
-      return res.status(404).json({
-        status: "fail",
-        message: "Creator not found",
-      });
+      return next(new AppError("creator not found!", 404));
     }
 
     res.status(200).json({
@@ -98,81 +95,39 @@ const updateCreatorStatus = async (req, res, next) => {
   }
 };
 
-// const addSubjectByCreator =  async (req, res, next) => {
-//   try {
-//       const id = req.params.id;
-
-//       const creator = await Creator.findByIdAndUpdate(
-//         id,
-
-//       );
-
-//       if (!creator) {
-//         return res.status(404).json({
-//           status: "fail",
-//           message: "Creator not found",
-//         });
-//       }
-
-//       res.status(200).json({
-//         status: "success",
-//         data: creator,
-//       });
-//   } catch (error) {
-//     next(error)
-//   }
-// };
-
 const addSubjectByCreator = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const subjectsToAdd =  req.body.creatorSubjectOfInterest; // Assuming you pass an array of subjects in the request body
-    
+
+    // Expecting an array of subjects in the request body
+    const subjectsToAdd = req.body.creatorSubjectOfInterest;
     const creator = await Creator.findById(id);
 
     if (!creator) {
-      // change the respone to new app error
-      return res.status(404).json({
-        status: "fail",
-        message: "Creator not found",
-      });
+      return next(new AppError("creator not found!", 404));
     }
 
-    // const currentSubjects = creator.creatorSubjectOfInterest || []; // If the field is not set yet, default to an empty array
-    // const remainingSlots = 4 - currentSubjects.length;
-
-    const currentSubjects = creator.creatorSubjectOfInterest
-    console.log(currentSubjects);
+    // const currentSubjects = creator.creatorSubjectOfInterest
 
     if (subjectsToAdd.length > 4) {
-      // return res.status(400).json({
-      //   status: "fail",
-      //   message: `You can only add at most 4 subjects at a time`,
-      // });
-      return new AppError("You can only add at most 4 subjects at a time", 400)
+      return next(new AppError("You can only add at most 4 subjects", 400));
     }
 
-    // Assuming you want to prevent duplicates, you can check if the subject is already present in the array
-    const uniqueSubjectsToAdd = subjectsToAdd.filter(
-      (subject) => !currentSubjects.includes(subject)
+    // Prevent duplicates by checking if the subject is already present in the array
+    uniqueSubjectsToAdd = subjectsToAdd.filter(
+      (subject, i, a) => a.indexOf(subject) === i
     );
 
-    const updatedSubjects = currentSubjects.concat(uniqueSubjectsToAdd);
-
-    console.log(updatedSubjects);
-
-    // creator.creatorSubjectOfInterest = updatedSubjects;
-    // await creator.save();
 
     const addedSubjects = await Creator.findByIdAndUpdate(
       id,
-      { creatorSubjectOfInterest: updatedSubjects },
+      { creatorSubjectOfInterest: uniqueSubjectsToAdd },
       { new: true, runValidators: true, context: "query" }
     );
 
     res.status(200).json({
       status: "success",
-      data: addedSubjects
+      data: addedSubjects,
     });
   } catch (error) {
     next(error);
@@ -187,13 +142,6 @@ const deleteCreator = async (req, res, next) => {
     if (!oldCreator) {
       return next(new AppError("Creator not found", 404));
     }
-
-    // Checking if the user attempting to delete is the author
-    // if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
-    //   return next(
-    //     new AppError("You cannot delete as you're not the author", 403)
-    //   );
-    // }
 
     await Creator.findByIdAndRemove(id);
 
