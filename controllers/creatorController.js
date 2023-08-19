@@ -49,6 +49,28 @@ const getCreator = async (req, res, next) => {
   }
 };
 
+const getProfile = async (req, res, next) => {
+  try {
+    const id = req.user._id;
+    const creator = await Creator.findById(id);
+
+    console.log(id);
+
+    if (!creator) {
+      return next(new AppError("Creator not found", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        creator,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createCreator = (req, res, next) => {
   res.status(200).json({
     status: "success",
@@ -157,6 +179,7 @@ const deleteCreator = async (req, res, next) => {
 module.exports = {
   getAllCreators,
   getCreator,
+  getProfile,
   createCreator,
   updateCreatorStatus,
   addSubjectByCreator,

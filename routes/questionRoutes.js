@@ -16,7 +16,7 @@ router
     passport.authenticate("jwt", { session: false }),
     questionController.uploadQuestionPicture,
     // questionController.resizeQuestionPicture,
-    // QuestionValidationMW,
+    QuestionValidationMW,
     questionController.createQuestion
   );
 
