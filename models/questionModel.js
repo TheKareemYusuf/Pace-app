@@ -9,9 +9,8 @@ const QuestionSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    questionImageUrl: {
-      type: [{ type: String }],
-    },
+    questionImageUrl: String,
+    questionImagePublicId: String,
     answerOptions: {
       type: [
         {

@@ -1,42 +1,85 @@
 const Question = require("./../models/questionModel");
 const AppError = require("../utils/appError");
-const APIFeatures = require('./../utils/apiFeatures');
+const APIFeatures = require("./../utils/apiFeatures");
 const Creator = require("./../models/creatorModel");
-const multer = require('multer');
-const sharp = require('sharp');
-
+const multer = require("multer");
+const sharp = require("sharp");
+const {
+  uploadToCloudinary,
+  removeFromCloudinary,
+} = require("./../utils/cloudinary");
 
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
+  if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new AppError('Not an image! Please upload only images.', 400), false);
+    cb(new AppError("Not an image! Please upload only images.", 400), false);
   }
 };
 
 const upload = multer({
   storage: multerStorage,
-  fileFilter: multerFilter
+  fileFilter: multerFilter,
 });
 
-const uploadQuestionPicture = upload.single('questionImageUrl');
+const uploadQuestionPicture = upload.single("questionImage");
 
-const resizeQuestionPicture = async (req, res, next) => {
-  if (!req.file) return next();
+// const resizeQuestionPicture = async (req, res, next) => {
+//   if (!req.file) return next();
 
-  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+//   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
-  await sharp(req.file.buffer)
-    .resize(500, 500)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile(`public/${req.file.filename}`);
+//   await sharp(req.file.buffer)
+//     .resize(500, 500)
+//     .toFormat("jpeg")
+//     .jpeg({ quality: 90 })
+//     .toFile(`public/${req.file.filename}`);
 
-  next();
+//   next();
+// };
+
+const createQuestion = async (req, res, next) => {
+  try {
+    const {
+      question,
+      answerOptions,
+      subject,
+      correctAnswer,
+      questionImageUrl,
+      mode,
+    } = req.body;
+
+    let imageData = { }
+
+    if (req.file) {
+      const imageBuffer = req.file.buffer
+      const data = await uploadToCloudinary(imageBuffer, "question-images");
+      imageData = data
+    } 
+      
+      const newQuestion = await Question.create({
+        question,
+        questionImageUrl: imageData.url,
+        questionImagePublicId: imageData.public_id,
+        answerOptions,
+        subject,
+        correctAnswer,
+        creatorName: req.user.firstName,
+        creatorId: req.user._id,
+        mode,
+      });
+
+      res.status(201).json({
+        status: "success",
+        message: "Question created successfully",
+        data: newQuestion,
+      });
+    } catch (error) {
+    next(error);
+  }
 };
-
 
 // Get all questions
 const getAllQuestions = async (req, res, next) => {
@@ -50,13 +93,16 @@ const getAllQuestions = async (req, res, next) => {
     if (user.role === "creator") {
       // const questions = await Question.find().where("creatorId").equals(id);
 
-       const features = new APIFeatures(Question.find().where("creatorId").equals(id), req.query)
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
+      const features = new APIFeatures(
+        Question.find().where("creatorId").equals(id),
+        req.query
+      )
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
 
-      const questions = await features.query
+      const questions = await features.query;
 
       res.status(200).json({
         status: "success",
@@ -66,12 +112,11 @@ const getAllQuestions = async (req, res, next) => {
         },
       });
     } else {
-
       const features = new APIFeatures(Question.find(), req.query)
-      .filter()
-      .sort()
-      .limitFields()
-      .paginate();
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
       const questions = await features.query;
 
       res.status(200).json({
@@ -108,61 +153,31 @@ const getQuestion = async (req, res, next) => {
   }
 };
 
-const createQuestion = async (req, res, next) => {
-  try {
-    const {
-      question,
-      answerOptions,
-      subject,
-      correctAnswer,
-      questionImageUrl,
-      mode,
-    } = req.body;
-    
-    const newQuestion = await Question.create({
-      question,
-      questionImageUrl,
-      answerOptions,
-      subject,
-      correctAnswer,
-      creatorName: req.user.firstName,
-      creatorId: req.user._id,
-      mode,
-    });
-
-    res.status(201).json({
-      status: "success",
-      message: "Question created successfully",
-      data: newQuestion,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 // This will be reserved for super admin
 const updateQuestionState = async (req, res, next) => {
   try {
-    let  state  = req.body.state;
+    let state = req.body.state;
     const id = req.params.id;
 
     const oldQuestion = await Question.findById(id);
 
-    // Checking if the user attempting to update is the author 
+    // Checking if the user attempting to update is the author
     // if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
     //   return next(
     //     new AppError("You cannot edit as you're not the author", 403)
     //   );
-    // } 
+    // }
 
     if (req.user.role !== "admin") {
-      return new AppError("You are not authorized", 403)
+      return new AppError("You are not authorized", 403);
     }
 
     if (
       !(
         state &&
-        (state.toLowerCase() === "pending" || state.toLowerCase() === "approved" || state.toLowerCase() === "rejected")
+        (state.toLowerCase() === "pending" ||
+          state.toLowerCase() === "approved" ||
+          state.toLowerCase() === "rejected")
       )
     ) {
       return new AppError("Please provide a valid state", 400);
@@ -175,7 +190,7 @@ const updateQuestionState = async (req, res, next) => {
     );
 
     if (!question) {
-      return next(new AppError("Question not found", 404))
+      return next(new AppError("Question not found", 404));
     }
 
     res.status(200).json({
@@ -203,7 +218,6 @@ const updateQuestion = async (req, res, next) => {
         );
       }
     }
-    
 
     const question = await Question.findByIdAndUpdate(id, questionUpdate, {
       new: true,
@@ -240,7 +254,6 @@ const deleteQuestion = async (req, res, next) => {
     //     new AppError("You cannot delete as you're not the author", 403)
     //   );
     // }
-    
 
     await Question.findByIdAndRemove(id);
 
@@ -261,5 +274,4 @@ module.exports = {
   updateQuestionState,
   deleteQuestion,
   uploadQuestionPicture,
-  resizeQuestionPicture
 };

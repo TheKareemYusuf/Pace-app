@@ -2,7 +2,8 @@ const Joi = require("joi");
 
 const QuestionSchema = Joi.object({
   question: Joi.string().min(5).trim().required(),
-  questionImageUrl: Joi.array().items(Joi.string()).optional(),
+  questionImageUrl: Joi.string().optional(),
+  questionImagePublicId: Joi.string().optional(),
   answerOptions: Joi.array().items(Joi.string()).required(),
   subject: Joi.string().max(225).required(),
   correctAnswer: Joi.string().required(),
