@@ -4,6 +4,7 @@ const CONFIG = require('./../config/config')
 
 
 const Creator = require("./../models/creatorModel");
+const AppError = require("../utils/appError");
 
 
 
@@ -55,8 +56,12 @@ passport.use(
       const { email, password } = req.body;
       const user = await Creator.findOne({ email }).select("+password");
 
+      // if (!user.email) {
+      //   return next(new AppError("this user does not exist", 404))
+      // }
       if (!user) {
-        return next(null, false, { message: "User not found" });
+        // return next(null, false, { message: "User not found" });
+        return next(new AppError("this user does not exist", 404))
       }
 
       const validate = await user.isValidPassword(password);
