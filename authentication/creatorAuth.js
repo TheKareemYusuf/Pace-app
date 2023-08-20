@@ -1,12 +1,9 @@
 const passport = require("passport");
 const passportCustom = require("passport-custom");
-const CONFIG = require('./../config/config')
-
+const CONFIG = require("./../config/config");
 
 const Creator = require("./../models/creatorModel");
 const AppError = require("../utils/appError");
-
-
 
 const JWTstrategy = require("passport-jwt").Strategy;
 const ExtractJWT = require("passport-jwt").ExtractJwt;
@@ -15,7 +12,7 @@ passport.use(
   new JWTstrategy(
     {
       secretOrKey: CONFIG.SECRET_KEY,
-      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(), 
+      jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     },
     async (token, next) => {
       try {
@@ -40,7 +37,7 @@ passport.use(
         password,
         confirmPassword,
         // role
-      }); 
+      });
 
       return next(null, user);
     } catch (error) {
@@ -48,7 +45,7 @@ passport.use(
     }
   })
 );
- 
+
 passport.use(
   "creator-login",
   new passportCustom(async (req, next) => {
@@ -61,13 +58,14 @@ passport.use(
       // }
       if (!user) {
         // return next(null, false, { message: "User not found" });
-        return next(new AppError("this user does not exist", 404))
+        return next(new AppError("This user does not exist", 404));
       }
 
       const validate = await user.isValidPassword(password);
 
       if (!validate) {
-        return next(null, false, { message: "Wrong Password" });
+        // return next(null, false, { message: "Wrong Password" });
+        return next(new AppError("Username or Password is incorrect", 404));
       }
 
       return next(null, user, { message: "Logged in Successfully" });
