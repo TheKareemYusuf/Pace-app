@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Creator = require("./../models/creatorModel");
 const Question = require("./../models/questionModel");
 const AppError = require("./../utils/appError");
@@ -55,26 +56,49 @@ const getProfile = async (req, res, next) => {
     const id = req.user._id;
     const creator = await Creator.findById(id);
 
-    console.log(id);
+    // console.log(id);
 
     if (!creator) {
       return next(new AppError("Creator not found", 404));
     }
 
+    // const creatorProfileStats = await Question.aggregate([
+    //   { $match: { creatorId: new mongoose.Types.ObjectId(id) } },
+    //   {
+    //     $count: "count",
+    //   },
+    //   {
+    //     $group: {
+    //       _id: "$state",
+    //       count: { $sum: 1 },
+    //     },
+    //   },
+
+    // ]);
+
     const creatorProfileStats = await Question.aggregate([
-      { $match: { creatorId: id } },
+      { $match: { creatorId: new mongoose.Types.ObjectId(id) } },
       {
-        $group: {
-          _id: "$state",
-          count: { $sum: 1 },
+        $facet: {
+          totalQuestions: [
+            {
+              $count: "count",
+            },
+          ],
+          statsByState: [
+            {
+              $group: {
+                _id: "$state",
+                count: { $sum: 1 },
+              },
+            },
+          ],
         },
       },
       {
-        lookup: {
-          from: "creators", // Change to the actual collection name where Creator documents are stored
-          localField: "creatorId",
-          foreignField: "_id",
-          as: "creatorDetails",
+        $project: {
+          totalQuestions: { $arrayElemAt: ["$totalQuestions.count", 0] },
+          statsByState: 1,
         },
       },
     ]);
@@ -82,7 +106,12 @@ const getProfile = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: {
-        creator,
+        creatorDetails: {
+          firstName: creator.firstName || null,
+          lastName: creator.lastName || null,
+          email: creator.email,
+          phoneNumber: creator.phoneNumber || null,
+        },
         creatorProfileStats,
       },
     });

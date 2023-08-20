@@ -44,7 +44,7 @@ authRouter.post("/login", async (req, res, next) => {
         return next(err);
       }
       if (!user) {
-        const error = new AppError("Username or password is incorrect", 404);
+        const error = new AppError("Username or password is incorrect", 504);
         return next(error);
       }
 
