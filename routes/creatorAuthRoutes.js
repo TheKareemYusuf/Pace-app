@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const CONFIG = require("./../config/config");
+const AppError = require("../utils/appError");
 
 const authRouter = express.Router();
 
@@ -43,7 +44,7 @@ authRouter.post("/login", async (req, res, next) => {
         return next(err);
       }
       if (!user) {
-        const error = new Error("Username or password is incorrect");
+        const error = new AppError("Username or password is incorrect", 404);
         return next(error);
       }
 

@@ -1,4 +1,5 @@
 const Creator = require("./../models/creatorModel");
+const Question = require("./../models/questionModel");
 const AppError = require("./../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
 
@@ -60,10 +61,29 @@ const getProfile = async (req, res, next) => {
       return next(new AppError("Creator not found", 404));
     }
 
+    const creatorProfileStats = await Question.aggregate([
+      { $match: { creatorId: id } },
+      {
+        $group: {
+          _id: "$state",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        lookup: {
+          from: "creators", // Change to the actual collection name where Creator documents are stored
+          localField: "creatorId",
+          foreignField: "_id",
+          as: "creatorDetails",
+        },
+      },
+    ]);
+
     res.status(200).json({
       status: "success",
       data: {
         creator,
+        creatorProfileStats,
       },
     });
   } catch (error) {
@@ -139,7 +159,6 @@ const addSubjectByCreator = async (req, res, next) => {
     uniqueSubjectsToAdd = subjectsToAdd.filter(
       (subject, i, a) => a.indexOf(subject) === i
     );
-
 
     const addedSubjects = await Creator.findByIdAndUpdate(
       id,
