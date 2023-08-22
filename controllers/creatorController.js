@@ -3,6 +3,13 @@ const Creator = require("./../models/creatorModel");
 const Question = require("./../models/questionModel");
 const AppError = require("./../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
+const uploadPicture = require("./../utils/multerImageHandler");
+const {
+  uploadToCloudinary,
+  removeFromCloudinary,
+} = require("./../utils/cloudinary");
+
+const uploadCreatorPicture = uploadPicture.single("creatorProfileImage");
 
 const getAllCreators = async (req, res, next) => {
   // res.status(200).json({
@@ -51,6 +58,62 @@ const getCreator = async (req, res, next) => {
   }
 };
 
+// In progress
+const uploadCreatorProfilePicture = async (req, res, next) => {
+  try {
+    // Get the user id
+    const id = req.user._id;
+    const creator = await Creator.findById(id);
+
+    // check to see if creator truly exists
+    if (!creator) {
+      return next(new AppError("Creator not found", 404));
+    }
+
+    // Remove the previously uploaded image from clodinary
+    // const public_id = creator.creatorImagePublicId
+    // if (public_id) {
+    //   await removeFromCloudinary(public_id);
+    // }
+
+    // initialize image data
+    let imageData = {};
+
+    // uploads the image to cloudinary if there's any
+    if (req.file) {
+      const imageBuffer = req.file.buffer;
+      const data = await uploadToCloudinary(imageBuffer, "creator-images");
+      imageData = data;
+    }
+
+    // console.log(imageData);
+
+    // update the database with the recently uploaded image
+    const profileImage = await Creator.findByIdAndUpdate(
+      id,
+      {
+        creatorImageUrl: imageData.url,
+        creatorImagePublicId: imageData.public_id,
+      },
+      {
+        new: true,
+        runValidators: true,
+        context: "query",
+      }
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: "Profile picture uploaded successfully",
+      data: {
+        creatorImageUrl: imageData.url,
+        creatorImagePublicId: imageData.public_id,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 const getProfile = async (req, res, next) => {
   try {
     const id = req.user._id;
@@ -61,20 +124,6 @@ const getProfile = async (req, res, next) => {
     if (!creator) {
       return next(new AppError("Creator not found", 404));
     }
-
-    // const creatorProfileStats = await Question.aggregate([
-    //   { $match: { creatorId: new mongoose.Types.ObjectId(id) } },
-    //   {
-    //     $count: "count",
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$state",
-    //       count: { $sum: 1 },
-    //     },
-    //   },
-
-    // ]);
 
     const creatorProfileStats = await Question.aggregate([
       { $match: { creatorId: new mongoose.Types.ObjectId(id) } },
@@ -228,6 +277,8 @@ module.exports = {
   getAllCreators,
   getCreator,
   getProfile,
+  uploadCreatorPicture,
+  uploadCreatorProfilePicture,
   createCreator,
   updateCreatorStatus,
   addSubjectByCreator,

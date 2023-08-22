@@ -2,29 +2,16 @@ const Question = require("./../models/questionModel");
 const AppError = require("../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
 const Creator = require("./../models/creatorModel");
-const multer = require("multer");
-const sharp = require("sharp");
+const uploadPicture = require('./../utils/multerImageHandler');
+// const multer = require("multer");
+// const sharp = require("sharp");
 const {
   uploadToCloudinary,
   removeFromCloudinary,
 } = require("./../utils/cloudinary");
 
-const multerStorage = multer.memoryStorage();
 
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new AppError("Not an image! Please upload only images.", 400), false);
-  }
-};
-
-const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-});
-
-const uploadQuestionPicture = upload.single("questionImage");
+const uploadQuestionPicture = uploadPicture.single("questionImage");
 
 // const resizeQuestionPicture = async (req, res, next) => {
 //   if (!req.file) return next();

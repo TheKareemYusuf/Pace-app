@@ -13,7 +13,7 @@ const QuestionSchema = new mongoose.Schema(
     questionImagePublicId: String,
     answerOptions: {
       type: [
-        {
+        { 
           type: String,
           required: true,
         },

@@ -43,7 +43,7 @@ uploadToCloudinary = async (buffer, folder) => {
 };
 
 removeFromCloudinary = async (public_id) => {
-  await cloudinary.v2.uploader.destroy(public_id, function (error, result) {
+  await cloudinary.uploader.destroy(public_id, function (error, result) {
     console.log(result, error);
   });
 };

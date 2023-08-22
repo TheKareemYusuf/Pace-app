@@ -22,12 +22,12 @@ const CreatorSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: [true, "Please enter first name"],
-    trim: true
+    trim: true,
   },
   lastName: {
     type: String,
     required: [true, "Please enter last name"],
-    trim: true
+    trim: true,
   },
   email: {
     type: String,
@@ -35,7 +35,7 @@ const CreatorSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     validate: [validator.isEmail, "Please provide a valid email"],
-  }, 
+  },
   // phoneNumber: {
   //   type: String,
   //   // required: true,
@@ -46,7 +46,7 @@ const CreatorSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter your password"],
     minlength: 8,
-    select: false
+    select: false,
   },
   confirmPassword: {
     type: String,
@@ -60,6 +60,14 @@ const CreatorSchema = new mongoose.Schema({
     select: false,
   },
   // bankDetails: BankDetailsSchema,
+  creatorImageUrl: {
+    type: String,
+    default: "http://res.cloudinary.com/dzodph4o8/image/upload/v1692727071/question-images/asp0ztuvtucupf3lcwpl.png"
+  },
+  creatorImagePublicId: {
+    type: String,
+    default: "question-images/asp0ztuvtucupf3lcwpl"
+  },
   creatorSubjectOfInterest: {
     type: [
       {
@@ -67,10 +75,10 @@ const CreatorSchema = new mongoose.Schema({
       },
     ],
     validate: {
-      validator: function(arr) {
+      validator: function (arr) {
         return arr.length <= 4;
       },
-      message: "Subject of interest can only contain at most 4 elements"
+      message: "Subject of interest can only contain at most 4 elements",
     },
     default: [],
   },
@@ -80,10 +88,10 @@ const CreatorSchema = new mongoose.Schema({
     default: "creator",
   },
   status: {
-    type: String, 
+    type: String,
     enum: ["active", "non-active", "deactivated"],
-    default: "active"
-  }
+    default: "active",
+  },
 });
 
 CreatorSchema.pre("save", async function (next) {

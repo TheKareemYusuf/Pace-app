@@ -17,6 +17,11 @@ router
   .get(
     passport.authenticate("jwt", { session: false }),
     creatorController.getProfile
+  )
+  .patch(
+    passport.authenticate("jwt", { session: false }),
+    creatorController.uploadCreatorPicture,
+    creatorController.uploadCreatorProfilePicture
   );
 
 router
@@ -54,7 +59,5 @@ router
     restrictToMW.restrictTo("admin"),
     creatorController.deleteCreator
   );
-
-
 
 module.exports = router;
