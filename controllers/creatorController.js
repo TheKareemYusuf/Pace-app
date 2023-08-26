@@ -114,12 +114,68 @@ const uploadCreatorProfilePicture = async (req, res, next) => {
     next(error);
   }
 };
+// const getProfile = async (req, res, next) => {
+//   try {
+//     const id = req.user._id;
+//     const creator = await Creator.findById(id);
+
+//     // console.log(id);
+
+//     if (!creator) {
+//       return next(new AppError("Creator not found", 404));
+//     }
+
+//     const creatorProfileStats = await Question.aggregate([
+//       { $match: { creatorId: new mongoose.Types.ObjectId(id) } },
+//       {
+//         $facet: {
+//           totalQuestions: [
+//             {
+//               $count: "count",
+//             },
+//           ],
+//           statsByState: [
+//             {
+//               $group: {
+//                 _id: "$state",
+//                 count: { $sum: 1 },
+//               },
+//             },
+//           ],
+//         },
+//       },
+//       {
+//         $project: {
+//           totalQuestions: { $arrayElemAt: ["$totalQuestions.count", 0] },
+//           statsByState: 1,
+//         },
+//       },
+//     ]);
+
+//     // numberOfPending = creatorProfileStats[0]._id
+//     res.status(200).json({
+//       status: "success",
+//       data: {
+//         // creatorDetails: {
+//         //   firstName: creator.firstName || null,
+//         //   lastName: creator.lastName || null,
+//         //   email: creator.email,
+//         //   phoneNumber: creator.phoneNumber || null,
+//         // },
+//         creator,
+//         totalQuestions: creatorProfileStats[1],
+//         statsByState: creatorProfileStats[0]
+//       },
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 const getProfile = async (req, res, next) => {
   try {
     const id = req.user._id;
     const creator = await Creator.findById(id);
-
-    // console.log(id);
 
     if (!creator) {
       return next(new AppError("Creator not found", 404));
@@ -152,16 +208,26 @@ const getProfile = async (req, res, next) => {
       },
     ]);
 
+    // Transform the array of statsByState into an object
+    const statsByStateObj = {};
+    creatorProfileStats[0].statsByState.forEach((stat) => {
+      statsByStateObj[stat._id] = stat.count;
+    });
+
+    // Ensure that all states (pending, approved, rejected) are present in the response
+    const stateLabels = ["pending", "approved", "rejected"];
+    stateLabels.forEach((state) => {
+      if (!statsByStateObj.hasOwnProperty(state)) {
+        statsByStateObj[state] = 0;
+      }
+    });
+
     res.status(200).json({
       status: "success",
       data: {
-        creatorDetails: {
-          firstName: creator.firstName || null,
-          lastName: creator.lastName || null,
-          email: creator.email,
-          phoneNumber: creator.phoneNumber || null,
-        },
-        creatorProfileStats,
+        creator,
+        totalQuestions: creatorProfileStats[1],
+        statsByState: statsByStateObj,
       },
     });
   } catch (error) {
