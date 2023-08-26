@@ -15,7 +15,7 @@ router
   );
 router
   .route("/verify/:token")
-  .get(inviteController.getInvitationLinkPage)
+  .get(inviteController.getInviteEmail)
   .post(inviteController.verifyInviteLink);
 
 module.exports = router;

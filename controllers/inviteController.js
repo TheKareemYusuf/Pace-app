@@ -51,7 +51,7 @@ const generateInviteLink = async (req, res, next) => {
   }
 };
 
-const getInvitationLinkPage = async (req, res, next) => {
+const getInviteEmail = async (req, res, next) => {
   try {
     console.log({ token: req.params.token });
     const invite = await Invite.findOne({ token: req.params.token });
@@ -62,9 +62,12 @@ const getInvitationLinkPage = async (req, res, next) => {
       return next(new AppError("Token is expired", 401));
     }
 
+    
+
     res.status(200).json({
       status: "success",
       message: "kindly fill the form below",
+      invite,
     });
   } catch (error) {
     next(error);
@@ -78,6 +81,7 @@ const verifyInviteLink = async (req, res, next) => {
       return next(new AppError("Invalid invite link", 404));
     }
     if (invite.isExpired()) {
+      await Invite.findByIdAndRemove(invite._id);
       return next(new AppError("Invitation has expired", 401));
     }
 
@@ -93,6 +97,6 @@ const verifyInviteLink = async (req, res, next) => {
 
 module.exports = {
   generateInviteLink,
-  getInvitationLinkPage,
+  getInviteEmail,
   verifyInviteLink,
 };

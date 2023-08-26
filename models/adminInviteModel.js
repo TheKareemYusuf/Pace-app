@@ -26,6 +26,9 @@ InviteSchema.methods.isExpired = function () {
   return Date.now() > this.expiry || this.user;
 };
 
+// Create a TTL index on the "expiry" field with a 0-second expiration delay
+// InviteSchema.index({ expiry: 1 }, { expireAfterSeconds: 0 })
+
 const Invite = mongoose.model("Invite", InviteSchema);
 
 module.exports = Invite;
