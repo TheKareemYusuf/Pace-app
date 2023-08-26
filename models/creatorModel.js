@@ -36,12 +36,12 @@ const CreatorSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, "Please provide a valid email"],
   },
-  // phoneNumber: {
-  //   type: String,
-  //   // required: true,
-  //   // unique: true,
-  //   default: null
-  // },
+  phoneNumber: {
+    type: String,
+    // required: true,
+    unique: true,
+    // default: null
+  },
   password: {
     type: String,
     required: [true, "Please enter your password"],
@@ -81,6 +81,14 @@ const CreatorSchema = new mongoose.Schema({
       message: "Subject of interest can only contain at most 4 elements",
     },
     default: [],
+  },
+  gender: {
+    type: String,
+    enum: ["Male", "Female"],
+  },
+  department: {
+    type: String,
+    enum: ["Science", "Social Science", "Art"],
   },
   role: {
     type: String,

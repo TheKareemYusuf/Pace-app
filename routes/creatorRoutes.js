@@ -25,6 +25,14 @@ router
   );
 
 router
+  .route("/add-subject")
+  .put(
+    CreatorValidationMW,
+    passport.authenticate("jwt", { session: false }),
+    creatorController.addSubjectByCreator
+  );
+
+router
   .route("/")
   .get(
     passport.authenticate("jwt", { session: false }),
@@ -48,11 +56,6 @@ router
     passport.authenticate("jwt", { session: false }),
     restrictToMW.restrictTo("admin"),
     creatorController.updateCreatorStatus
-  )
-  .put(
-    CreatorValidationMW,
-    passport.authenticate("jwt", { session: false }),
-    creatorController.addSubjectByCreator
   )
   .delete(
     passport.authenticate("jwt", { session: false }),

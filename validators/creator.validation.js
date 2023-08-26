@@ -28,6 +28,9 @@ const CreatorSchema = Joi.object({
   }),
   role: Joi.string(),
   status: Joi.string(),
+  gender: Joi.string(),
+  department: Joi.string(),
+  phoneNumber: Joi.string(),
   creatorSubjectOfInterest: Joi.array().items(Joi.string())
   // phoneNumber: Joi.string(),
     // .regex(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/i)

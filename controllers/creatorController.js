@@ -283,7 +283,7 @@ const updateCreatorStatus = async (req, res, next) => {
 
 const addSubjectByCreator = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const id = req.user._id;
 
     // Expecting an array of subjects in the request body
     const subjectsToAdd = req.body.creatorSubjectOfInterest;
