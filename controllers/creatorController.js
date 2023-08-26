@@ -71,10 +71,10 @@ const uploadCreatorProfilePicture = async (req, res, next) => {
     }
 
     // Remove the previously uploaded image from clodinary
-    // const public_id = creator.creatorImagePublicId
-    // if (public_id) {
-    //   await removeFromCloudinary(public_id);
-    // }
+    const public_id = creator.creatorImagePublicId
+    if (public_id && (public_id !== "question-images/asp0ztuvtucupf3lcwpl")) {
+      await removeFromCloudinary(public_id);
+    }
 
     // initialize image data
     let imageData = {};
@@ -86,7 +86,7 @@ const uploadCreatorProfilePicture = async (req, res, next) => {
       imageData = data;
     }
 
-    // console.log(imageData);
+    console.log(imageData);
 
     // update the database with the recently uploaded image
     const profileImage = await Creator.findByIdAndUpdate(
@@ -226,7 +226,7 @@ const getProfile = async (req, res, next) => {
       status: "success",
       data: {
         creator,
-        totalQuestions: creatorProfileStats[1],
+        totalQuestions: creatorProfileStats[0].totalQuestions,
         statsByState: statsByStateObj,
       },
     });
