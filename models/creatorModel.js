@@ -62,11 +62,11 @@ const CreatorSchema = new mongoose.Schema({
   // bankDetails: BankDetailsSchema,
   creatorImageUrl: {
     type: String,
-    default: "http://res.cloudinary.com/dzodph4o8/image/upload/v1692727071/question-images/asp0ztuvtucupf3lcwpl.png"
+    default: "http://res.cloudinary.com/dzodph4o8/image/upload/v1693051381/creator-images/qa3cdrcltw6rtgejgst2.webp"
   },
   creatorImagePublicId: {
     type: String,
-    default: "question-images/asp0ztuvtucupf3lcwpl"
+    default: "creator-images/qa3cdrcltw6rtgejgst2"
   },
   creatorSubjectOfInterest: {
     type: [

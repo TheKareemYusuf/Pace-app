@@ -72,7 +72,7 @@ const uploadCreatorProfilePicture = async (req, res, next) => {
 
     // Remove the previously uploaded image from clodinary
     const public_id = creator.creatorImagePublicId
-    if (public_id && (public_id !== "question-images/asp0ztuvtucupf3lcwpl")) {
+    if (public_id && (public_id !== "creator-images/qa3cdrcltw6rtgejgst2")) {
       await removeFromCloudinary(public_id);
     }
 

@@ -26,7 +26,12 @@ cloudinary.config({
 uploadToCloudinary = async (buffer, folder) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder },
+      {
+        folder,
+        transformation: [
+          { quality: "auto:low" }, // You can adjust the quality level as needed
+        ],
+      },
       (error, result) => {
         if (error) {
           console.log("Upload error:", error);
