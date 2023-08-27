@@ -13,7 +13,7 @@ const QuestionSchema = new mongoose.Schema(
     questionImagePublicId: String,
     answerOptions: {
       type: [
-        { 
+        {
           type: String,
           required: true,
         },
@@ -37,6 +37,11 @@ const QuestionSchema = new mongoose.Schema(
     subject: {
       type: String,
       required: [true, "Question must be set under a question"],
+      trim: true,
+    },
+    topic: {
+      type: String,
+      required: [true, "Question must be set under a topic"],
       trim: true,
     },
     // subjectId: {
@@ -70,6 +75,79 @@ const QuestionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+QuestionSchema.statics.getCreatorProfileStats = async function (creatorId) {
+  const profileStats = await Question.aggregate([
+    { $match: { creatorId: new mongoose.Types.ObjectId(creatorId) } },
+    {
+      $facet: {
+        totalQuestions: [
+          {
+            $count: "count",
+          },
+        ],
+        statsByState: [
+          {
+            $group: {
+              _id: "$state",
+              count: { $sum: 1 },
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        totalQuestions: { $arrayElemAt: ["$totalQuestions.count", 0] },
+        statsByState: 1,
+      },
+    },
+  ]);
+
+  return profileStats;
+};
+
+QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
+  const questionStats = await Question.aggregate([
+    { $match: { creatorId: new mongoose.Types.ObjectId(creatorId) } },
+    {
+      $group: {
+        _id: "$subject",
+        totalQuestionsByCreator: { $sum: 1 },
+      },
+    },
+    // Lookup to get the total questions for each subject
+    {
+      $lookup: {
+        from: "questions", // Change this to the actual name of your questions collection
+        localField: "_id",
+        foreignField: "subject",
+        as: "subjectQuestions",
+      },
+    },
+    // Project fields and calculate the percentage
+    {
+      $project: {
+        _id: 0,
+        subject: "$_id",
+        totalQuestionsByCreator: 1,
+        totalQuestions: { $size: "$subjectQuestions" },
+        percentage: {
+          $multiply: [
+            {
+              $divide: [
+                "$totalQuestionsByCreator",
+                { $size: "$subjectQuestions" },
+              ],
+            },
+            100,
+          ],
+        },
+      },
+    },
+  ]);
+
+  return questionStats;
+};
 const Question = mongoose.model("Question", QuestionSchema);
 
 module.exports = Question;

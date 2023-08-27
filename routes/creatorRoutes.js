@@ -25,6 +25,12 @@ router
   );
 
 router
+  .route("/question-stats")
+  .get(
+    passport.authenticate("jwt", { session: false }),
+    creatorController.getCreatorQuestionStats  )
+
+router
   .route("/add-subject")
   .put(
     CreatorValidationMW,
