@@ -39,7 +39,7 @@ const UserSchema = new mongoose.Schema({
     // starts with an alphabet, followed by alphanumeric characters (if any).
     // The + sign indicates one or more occurrences, and the * sign indicates
     // zero or more occurrences.
-    trim: true,
+    trim: true, 
   },
   email: {
     type: String,
@@ -68,7 +68,7 @@ const UserSchema = new mongoose.Schema({
     },
   },
   confirmPassword: {
-    type: String,
+    type: String, 
     select: false,
     validate: {
       validator: function (el) {

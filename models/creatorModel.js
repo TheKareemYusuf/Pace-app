@@ -88,7 +88,7 @@ const CreatorSchema = new mongoose.Schema({
   },
   department: {
     type: String,
-    enum: ["Science", "Social Science", "Art"],
+    enum: ["Science", "Non-Science"],
   },
   role: {
     type: String,

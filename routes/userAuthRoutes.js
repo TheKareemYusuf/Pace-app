@@ -18,7 +18,7 @@ authRouter.post(
       username: req.user.username,
     };
     const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "12h",
     });
 
     // Save the JWT in the session
@@ -56,7 +56,7 @@ authRouter.post("/login", async (req, res, next) => {
           username: req.user.username,
         };
         const token = jwt.sign({ user: body }, CONFIG.SECRET_KEY, {
-          expiresIn: "1h",
+          expiresIn: "12h",
         });
 
         // Save the JWT in the session

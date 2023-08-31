@@ -10,7 +10,7 @@ const UserSchema = Joi.object({
   password: Joi.string().when('$isNew', {
     is: true,
     then: Joi.required(),
-    otherwise: Joi.optional()
+    otherwise: Joi.optional() 
   }),
   confirmPassword: Joi.string().when('$isNew', {
     is: true,

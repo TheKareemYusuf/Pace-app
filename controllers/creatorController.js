@@ -162,7 +162,7 @@ const getCreatorQuestionStats = async (req, res, next) => {
     }
 
     const creatorQuestionStats = await Question.CreatorQuestionStats(id)
-
+    console.log(creatorQuestionStats);
     res.status(200).json({
       status: "success",
       data: creatorQuestionStats
