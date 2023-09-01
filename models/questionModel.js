@@ -215,7 +215,7 @@ QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
     "english",
     "physics",
     "chemistry",
-    "biology",
+    "biology", 
   ];
   const nonSciences = [
     "Account",
