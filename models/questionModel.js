@@ -154,6 +154,7 @@ QuestionSchema.statics.getCreatorProfileStats = async function (creatorId) {
 //   return questionStats;
 // };
 
+
 // QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
 //   const questionStats = await Question.aggregate([
 //     {
@@ -209,7 +210,13 @@ QuestionSchema.statics.getCreatorProfileStats = async function (creatorId) {
 // };
 
 QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
-  const sciences = ["mathematics", "english", "physics"];
+  const sciences = [
+    "mathematics",
+    "english",
+    "physics",
+    "chemistry",
+    "biology", 
+  ];
   const nonSciences = [
     "Account",
     "Commerce",
@@ -219,6 +226,7 @@ QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
     "Government",
   ];
 
+  
   const questionStats = await Question.aggregate([
     // Stage 1: Match questions with creators in their respective departments and subjects of interest
     {
@@ -228,18 +236,18 @@ QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
             subject: { $in: sciences },
             $or: [
               { department: "sciences" },
-              { creatorSubjectOfInterest: { $in: sciences } },
-            ],
+              { creatorSubjectOfInterest: { $in: sciences } }
+            ]
           },
           {
             subject: { $in: nonSciences },
             $or: [
               { department: "non-Sciences" },
-              { creatorSubjectOfInterest: { $in: nonSciences } },
-            ],
-          },
-        ],
-      },
+              { creatorSubjectOfInterest: { $in: nonSciences } }
+            ]
+          }
+        ]
+      }
     },
     // Stage 2: Group by subject and calculate total questions
     {
