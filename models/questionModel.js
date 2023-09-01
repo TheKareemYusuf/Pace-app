@@ -106,114 +106,160 @@ QuestionSchema.statics.getCreatorProfileStats = async function (creatorId) {
   return profileStats;
 };
 
+// QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
+//   const questionStats = await Question.aggregate([{
+//     $match: {
+//       creatorId: new mongoose.Types.ObjectId(creatorId),
+//     },
+//   },
+//   // Group by subject and count questions
+//   {
+//     $group: {
+//       _id: "$subject",
+//       totalQuestionsByCreator: { $sum: 1 },
+//     },
+//   },
+//   // Lookup to get the total questions for each subject
+//   {
+//     $lookup: {
+//       from: "questions", // Change this to the actual name of your questions collection
+//       localField: "_id",
+//       foreignField: "subject",
+//       as: "subjectQuestions",
+//     },
+//   },
+//   // Project fields and calculate the percentage
+//   {
+//     $project: {
+//       _id: 0,
+//       subject: "$_id",
+//       totalQuestionsByCreator: 1,
+//       totalQuestions: { $size: "$subjectQuestions" },
+//       percentage: {
+//         $cond: [
+//           { $eq: [{ $size: "$subjectQuestions" }, 0] },
+//           0,
+//           {
+//             $multiply: [
+//               { $divide: ["$totalQuestionsByCreator", { $size: "$subjectQuestions" }] },
+//               100,
+//             ],
+//           },
+//         ],
+//       },
+//     },
+//   }
+// ]);
+
+//   return questionStats;
+// };
+
+
+// QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
+//   const questionStats = await Question.aggregate([
+//     {
+//       $match: {
+//         creatorId: mongoose.Types.ObjectId(creatorId),
+//       },
+//     },
+//     // Group by subject and count questions
+//     {
+//       $group: {
+//         _id: "$subject",
+//         totalQuestionsByCreator: { $sum: 1 },
+//       },
+//     },
+//     // Lookup to get the total questions for each subject
+//     {
+//       $lookup: {
+//         from: "questions", // Change this to the actual name of your questions collection
+//         localField: "_id",
+//         foreignField: "subject",
+//         as: "subjectQuestions",
+//       },
+//     },
+//     // Project fields and calculate the percentage
+//     {
+//       $project: {
+//         _id: 0,
+//         subject: "$_id",
+//         totalQuestionsByCreator: 1,
+//         totalQuestions: { $size: "$subjectQuestions" },
+//         percentage: {
+//           $cond: [
+//             { $eq: [{ $size: "$subjectQuestions" }, 0] },
+//             0,
+//             {
+//               $multiply: [
+//                 {
+//                   $divide: [
+//                     "$totalQuestionsByCreator",
+//                     { $size: "$subjectQuestions" },
+//                   ],
+//                 },
+//                 100,
+//               ],
+//             },
+//           ],
+//         },
+//       },
+//     },
+//   ]);
+
+//   return questionStats;
+// };
+
 QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
-  const questionStats = await Question.aggregate([{
-    $match: {
-      creatorId: mongoose.Types.ObjectId(creatorId),
-    },
-  },
-  // Group by subject and count questions
-  {
-    $group: {
-      _id: "$subject",
-      totalQuestionsByCreator: { $sum: 1 },
-    },
-  },
-  // Lookup to get the total questions for each subject
-  {
-    $lookup: {
-      from: "questions", // Change this to the actual name of your questions collection
-      localField: "_id",
-      foreignField: "subject",
-      as: "subjectQuestions",
-    },
-  },
-  // Project fields and calculate the percentage
-  {
-    $project: {
-      _id: 0,
-      subject: "$_id",
-      totalQuestionsByCreator: 1,
-      totalQuestions: { $size: "$subjectQuestions" },
-      percentage: {
-        $cond: [
-          { $eq: [{ $size: "$subjectQuestions" }, 0] },
-          0,
-          {
-            $multiply: [
-              { $divide: ["$totalQuestionsByCreator", { $size: "$subjectQuestions" }] },
-              100,
-            ],
-          },
-        ],
-      },
-    },
-  }
-]);
+  const sciences = [
+    "mathematics",
+    "english",
+    "physics",
+    "chemistry",
+    "biology",
+  ];
+  const nonSciences = [
+    "Account",
+    "Commerce",
+    "Economics",
+    "English",
+    "Mathematics",
+    "Government",
+  ];
 
-  return questionStats;
-};
-
-QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
-  const subjectsOfInterest = await this.distinct("subject", { creatorId: new mongoose.Types.ObjectId(creatorId) });
-
+  
   const questionStats = await Question.aggregate([
-    // Group by subject and count questions
+    // Stage 1: Match questions with creators in their respective departments and subjects of interest
+    {
+      $match: {
+        $or: [
+          {
+            subject: { $in: sciences },
+            $or: [
+              { department: "sciences" },
+              { creatorSubjectOfInterest: { $in: sciences } }
+            ]
+          },
+          {
+            subject: { $in: nonSciences },
+            $or: [
+              { department: "non-Sciences" },
+              { creatorSubjectOfInterest: { $in: nonSciences } }
+            ]
+          }
+        ]
+      }
+    },
+    // Stage 2: Group by subject and calculate total questions
     {
       $group: {
         _id: "$subject",
-        totalQuestionsByCreator: { $sum: 1 },
-      },
-    },
-    // Lookup to get the total questions for each subject
-    {
-      $lookup: {
-        from: "questions", // Change this to the actual name of your questions collection
-        localField: "_id",
-        foreignField: "subject",
-        as: "subjectQuestions",
-      },
-    },
-    // Project fields and calculate the percentage
-    {
-      $project: {
-        _id: 0,
-        subject: "$_id",
-        totalQuestionsByCreator: 1,
-        totalQuestions: { $size: "$subjectQuestions" },
-        percentage: {
-          $cond: [
-            { $eq: [{ $size: "$subjectQuestions" }, 0] },
-            0,
-            {
-              $multiply: [
-                {
-                  $divide: [
-                    "$totalQuestionsByCreator",
-                    { $size: "$subjectQuestions" },
-                  ],
-                },
-                100,
-              ],
-            },
-          ],
-        },
+        totalQuestions: { $sum: 1 },
       },
     },
   ]);
 
-  const finalResult = subjectsOfInterest.map((subject) => {
-    const stat = questionStats.find((r) => r.subject === subject) || {
-      subject,
-      totalQuestionsByCreator: 0,
-      totalQuestions: 0,
-      percentage: 0,
-    };
-    return stat;
-  });
-  return finalResult;
+  return questionStats;
 };
-
 
 const Question = mongoose.model("Question", QuestionSchema);
 

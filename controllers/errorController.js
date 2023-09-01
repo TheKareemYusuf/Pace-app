@@ -9,9 +9,10 @@ const handleCastErrorDB = (err) => {
 const handleDuplicateFieldsDB = (err) => {
   const getKeyIdentifier = Object.keys(err.keyPattern)[0]
   // const value = err.keyValue[getKeyIdentifier]
-  const message = `Duplicate value from the field: '${getKeyIdentifier}'. Please use another value!`;
+  // const message = `Duplicate value from the field: '${getKeyIdentifier}'. Please use another value!`;
+  const message = `'${getKeyIdentifier}' already exists!`;
 
-  return new AppError(message, 400);
+  return new AppError(message, 409);
 };
 
 const handleValidationErrorDB = (err) => {

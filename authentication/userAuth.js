@@ -1,6 +1,7 @@
 const passport = require("passport");
 const passportCustom = require("passport-custom");
 const CONFIG = require("./../config/config");
+const AppError = require('./../utils/appError');
 
 const User = require("./../models/userModel");
 
@@ -28,6 +29,19 @@ passport.use(
   new passportCustom(async (req, next) => {
     try {
       const { phoneNumber, username, password, confirmPassword } = req.body;
+
+      // // Check if a user with the provided username exists
+      // const existingUsernameUser = await User.findOne({ username });
+      // if (existingUsernameUser) {
+      //   return next(null, false, { message: "Username is already in use" });
+      // }
+
+      // // Check if a user with the provided phone number exists
+      // const existingPhoneNumberUser = await User.findOne({ phoneNumber });
+      // if (existingPhoneNumberUser) {
+      //   return next(null, false, { message: "Phone number is already in use" });
+      // }
+
       const user = await User.create({
         phoneNumber,
         username,

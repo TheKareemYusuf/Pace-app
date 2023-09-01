@@ -20,6 +20,12 @@ router
   )
   .patch(
     passport.authenticate("jwt", { session: false }),
+    creatorController.updateCreatorProfile
+
+  );
+
+  router.route("/update-profile-picture").patch(
+    passport.authenticate("jwt", { session: false }),
     creatorController.uploadCreatorPicture,
     creatorController.uploadCreatorProfilePicture
   );

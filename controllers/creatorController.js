@@ -11,6 +11,14 @@ const {
 
 const uploadCreatorPicture = uploadPicture.single("creatorProfileImage");
 
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach(el => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
 const getAllCreators = async (req, res, next) => {
   // res.status(200).json({
   //   status: "success",
@@ -115,6 +123,40 @@ const uploadCreatorProfilePicture = async (req, res, next) => {
   }
 };
 
+const updateCreatorProfile = async (req, res, next) => {
+  try {
+    let creatorUpdate = { ...req.body };
+    const id = req.user._id;
+
+    if (req.body.password || req.body.confirmPassword) {
+      return next(
+        new AppError(
+          'This route is not for password updates. Please use /updateMyPassword.',
+          400
+        )
+      );
+    }  
+
+    const filteredBody = filterObj(creatorUpdate, 'firstName', 'lastName', 'email', 'phoneNumber', 'department');
+
+
+    const updatedCreator = await Creator.findByIdAndUpdate(id, filteredBody, {
+      new: true,
+      runValidators: true,
+      context: "query",
+    });
+
+   
+
+    res.status(200).json({
+      status: "success",
+      message: "Question updated successfully",
+      data: updatedCreator,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 const getProfile = async (req, res, next) => {
   try {
     const id = req.user._id;
@@ -161,8 +203,12 @@ const getCreatorQuestionStats = async (req, res, next) => {
       return next(new AppError("Creator not found", 404));
     }
 
+    // const subjects = creator.creatorSubjectOfInterest
+
     const creatorQuestionStats = await Question.CreatorQuestionStats(id)
-    console.log(creatorQuestionStats);
+    console.log(creatorQuestionStats);// Create a map of subjects to objects for quick lookup
+    
+
     res.status(200).json({
       status: "success",
       data: creatorQuestionStats
@@ -281,6 +327,7 @@ module.exports = {
   getCreator,
   getProfile,
   getCreatorQuestionStats,
+  updateCreatorProfile,
   uploadCreatorPicture,
   uploadCreatorProfilePicture,
   createCreator,
