@@ -206,6 +206,8 @@ const getCreatorQuestionStats = async (req, res, next) => {
     // const subjects = creator.creatorSubjectOfInterest
 
     const creatorQuestionStats = await Question.CreatorQuestionStats(id)
+    
+    
     console.log(creatorQuestionStats);// Create a map of subjects to objects for quick lookup
     
 

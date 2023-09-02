@@ -106,7 +106,7 @@ QuestionSchema.statics.getCreatorProfileStats = async function (creatorId) {
   return profileStats;
 };
 
-// QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
+QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
 //   const questionStats = await Question.aggregate([{
 //     $match: {
 //       creatorId: new mongoose.Types.ObjectId(creatorId),
@@ -151,8 +151,54 @@ QuestionSchema.statics.getCreatorProfileStats = async function (creatorId) {
 //   }
 // ]);
 
-//   return questionStats;
-// };
+  const questionStats = await Question.aggregate([
+    {
+      $match: {
+        creatorId: new mongoose.Types.ObjectId(creatorId),
+        subject: { $in: subjects }, // Filter by subjects of interest
+      },
+    },
+    // Group by subject and count questions
+    {
+      $group: {
+        _id: "$subject",
+        totalQuestionsByCreator: { $sum: 1 },
+      },
+    },
+    // Lookup to get the total questions for each subject
+    {
+      $lookup: {
+        from: "questions", // Change this to the actual name of your questions collection
+        localField: "_id",
+        foreignField: "subject",
+        as: "subjectQuestions",
+      },
+    },
+    // Project fields and calculate the percentage
+    {
+      $project: {
+        _id: 0,
+        subject: "$_id",
+        totalQuestionsByCreator: 1,
+        totalQuestions: { $size: "$subjectQuestions" },
+        percentage: {
+          $cond: [
+            { $eq: [{ $size: "$subjectQuestions" }, 0] },
+            0,
+            {
+              $multiply: [
+                { $divide: ["$totalQuestionsByCreator", { $size: "$subjectQuestions" }] },
+                100,
+              ],
+            },
+          ],
+        },
+      },
+    },
+  ])
+
+  return questionStats;
+};
 
 
 // QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
@@ -209,57 +255,72 @@ QuestionSchema.statics.getCreatorProfileStats = async function (creatorId) {
 //   return questionStats;
 // };
 
-QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
-  const sciences = [
-    "mathematics",
-    "english",
-    "physics",
-    "chemistry",
-    "biology", 
-  ];
-  const nonSciences = [
-    "Account",
-    "Commerce",
-    "Economics",
-    "English",
-    "Mathematics",
-    "Government",
-  ];
+// QuestionSchema.statics.CreatorQuestionStats = async function (creatorId) {
+//   const sciences = [
+//     "mathematics",
+//     "english",
+//     "physics",
+//     "chemistry",
+//     "biology", 
+//   ];
+//   const nonSciences = [
+//     "Account",
+//     "Commerce",
+//     "Economics",
+//     "English",
+//     "Mathematics",
+//     "Government",
+//   ];
 
   
-  const questionStats = await Question.aggregate([
-    // Stage 1: Match questions with creators in their respective departments and subjects of interest
-    {
-      $match: {
-        $or: [
-          {
-            subject: { $in: sciences },
-            $or: [
-              { department: "sciences" },
-              { creatorSubjectOfInterest: { $in: sciences } }
-            ]
-          },
-          {
-            subject: { $in: nonSciences },
-            $or: [
-              { department: "non-Sciences" },
-              { creatorSubjectOfInterest: { $in: nonSciences } }
-            ]
-          }
-        ]
-      }
-    },
-    // Stage 2: Group by subject and calculate total questions
-    {
-      $group: {
-        _id: "$subject",
-        totalQuestions: { $sum: 1 },
-      },
-    },
-  ]);
+//   const questionStats = await Question.aggregate([
+//     {
+//       $match: {
+//         creatorSubjectOfInterest: { $in: sciences }
+//       }
+//     },
+//     // Group by subject and count questions
+//     {
+//       $group: {
+//         _id: "$subject",
+//         totalQuestionsByCreator: { $sum: 1 },
+//       },
+//     },
+//     // Lookup to get the total questions for each subject
+//     {
+//       $lookup: {
+//         from: "questions", // Change this to the actual name of your questions collection
+//         localField: "_id",
+//         foreignField: "subject",
+//         as: "subjectQuestions",
+//       },
+//     },
+//     // Project fields and calculate the percentage
+//     {
+//       $project: {
+//         _id: 0,
+//         subject: "$_id",
+//         totalQuestionsByCreator: 1,
+//         totalQuestions: { $size: "$subjectQuestions" },
+//         percentage: {
+//           $cond: [
+//             { $eq: [{ $size: "$subjectQuestions" }, 0] },
+//             0,
+//             {
+//               $multiply: [
+//                 { $divide: ["$totalQuestionsByCreator", { $size: "$subjectQuestions" }] },
+//                 100,
+//               ],
+//             },
+//           ],
+//         },
+//       },
+//     },
+//     // Add a field to indicate if the subject is in the creator's department
+//   ]);
 
-  return questionStats;
-};
+//   return questionStats;
+// };
 
 const Question = mongoose.model("Question", QuestionSchema);
 

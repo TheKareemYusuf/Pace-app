@@ -8,10 +8,7 @@ const handleCastErrorDB = (err) => {
 
 const handleDuplicateFieldsDB = (err) => {
   const getKeyIdentifier = Object.keys(err.keyPattern)[0]
-  // const value = err.keyValue[getKeyIdentifier]
-  // const message = `Duplicate value from the field: '${getKeyIdentifier}'. Please use another value!`;
-  const message = `'${getKeyIdentifier}' already exists!`;
-
+  const message = `${getKeyIdentifier} already exists!`;
   return new AppError(message, 409);
 };
 
@@ -37,18 +34,17 @@ const sendErrorDev = (err, res) => {
   });
 };
 
+
 const sendErrorProd = (err, res) => {
   // Operational, trusted error: send message to client
   if (err.isOperational) {
-    res.status(err.statusCode).json({
+    return res.status(err.statusCode).json({
       status: err.status,
-      message: err.message,
+      message: err.message, // Ensure that the error message is included
     });
-
-    // Programming or other unknown error: don't leak error details
   } else {
     // 1) Log error
-    // console.error('ERROR 💥', err);
+    console.error('ERROR 💥', err); // Uncomment this line to log the error.
 
     // 2) Send generic message
     res.status(500).json({
@@ -59,15 +55,17 @@ const sendErrorProd = (err, res) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-  // console.log(err.stack);
+  console.log(err.stack);
 
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
+  err.message = err.message;
 
   if (CONFIG.NODE_ENV === "development") {
     sendErrorDev(err, res);
   } else if (CONFIG.NODE_ENV === "production") {
     let error = { ...err };
+    error.message = err.message;
 
     if (error.name === "CastError") error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
@@ -77,7 +75,8 @@ const errorHandler = (err, req, res, next) => {
     if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
 
     sendErrorProd(error, res);
-  }
-};
+  }}
+
+
 
 module.exports = { errorHandler };
