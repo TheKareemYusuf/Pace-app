@@ -194,6 +194,33 @@ const getProfile = async (req, res, next) => {
   }
 };
 
+// const getCreatorQuestionStats = async (req, res, next) => {
+//   try {
+//     const id = req.user._id;
+//     const creator = await Creator.findById(id);
+
+//     if (!creator) {
+//       return next(new AppError("Creator not found", 404));
+//     }
+
+//     const subjects = creator.creatorSubjectOfInterest
+
+//     const creatorQuestionStats = await Question.CreatorQuestionStats(id, subjects)
+    
+    
+//     console.log(creatorQuestionStats);// Create a map of subjects to objects for quick lookup
+    
+
+//     res.status(200).json({
+//       status: "success",
+//       data: creatorQuestionStats
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+
 const getCreatorQuestionStats = async (req, res, next) => {
   try {
     const id = req.user._id;
@@ -203,17 +230,51 @@ const getCreatorQuestionStats = async (req, res, next) => {
       return next(new AppError("Creator not found", 404));
     }
 
-    // const subjects = creator.creatorSubjectOfInterest
+    const subjectsOfInterest = creator.creatorSubjectOfInterest;
 
-    const creatorQuestionStats = await Question.CreatorQuestionStats(id)
-    
-    
-    console.log(creatorQuestionStats);// Create a map of subjects to objects for quick lookup
-    
+      const questionStats = await Question.CreatorQuestionStats(id, subjectsOfInterest)
+
+
+    // Get a list of subjects that the creator has not set any questions on
+    const subjectsWithNoQuestions = subjectsOfInterest.filter(
+      (subject) =>
+        !questionStats.find((stat) => stat._id === subject)
+    );
+
+    // Add the subjects with zero questions to the questionStats array
+    subjectsWithNoQuestions.forEach((subject) => {
+      questionStats.push({
+        _id: subject,
+        totalQuestionsByCreator: 0,
+      });
+    });
+
+    // Calculate the total questions for each subject
+    const totalQuestionsBySubject = await Question.TotalCreatorQuestionStats(subjectsOfInterest)
+
+    // Merge the total questions into the questionStats array
+    questionStats.forEach((stat) => {
+      const totalQuestionStat = totalQuestionsBySubject.find(
+        (totalStat) => totalStat._id === stat._id
+      );
+      if (totalQuestionStat) {
+        stat.totalQuestions = totalQuestionStat.totalQuestions;
+      }
+    });
+
+    // Calculate the percentage
+    questionStats.forEach((stat) => {
+      if (stat.totalQuestions === 0) {
+        stat.percentage = 0;
+      } else {
+        stat.percentage =
+          (stat.totalQuestionsByCreator / stat.totalQuestions) * 100;
+      }
+    });
 
     res.status(200).json({
       status: "success",
-      data: creatorQuestionStats
+      data: questionStats,
     });
   } catch (error) {
     next(error);
