@@ -78,6 +78,10 @@ const uploadCreatorProfilePicture = async (req, res, next) => {
       return next(new AppError("Creator not found", 404));
     }
 
+    if (!req.file) {
+      return next(new AppError("No file attached", 400))
+    }
+
     // Remove the previously uploaded image from clodinary
     const public_id = creator.creatorImagePublicId;
     if (public_id && public_id !== "creator-images/qa3cdrcltw6rtgejgst2") {
