@@ -23,12 +23,12 @@ const userAuthRouter = require("./routes/userAuthRoutes");
 
 const app = express();
 
-// const corsOptions = {
-//   origin: "*",
-//   credentials: true, //access-control-allow-credentials:true
-//   optionSuccessStatus: 200,
-// };
-app.use(cors());
+const corsOptions = {
+  origin: "*",
+  // credentials: true, //access-control-allow-credentials:true
+  // optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 
 console.log(app.get("env"));
 console.log(process.env.NODE_ENV);
