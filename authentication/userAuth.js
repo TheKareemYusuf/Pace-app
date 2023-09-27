@@ -41,7 +41,7 @@ passport.use(
       // if (existingPhoneNumberUser) {
       //   return next(null, false, { message: "Phone number is already in use" });
       // }
-
+ 
       const user = await User.create({
         phoneNumber,
         username,

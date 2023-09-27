@@ -2,6 +2,15 @@ const User = require("./../models/userModel");
 const AppError = require("./../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
 
+
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach(el => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
+
 const getAllUsers = async (req, res, next) => {
   try {
     const features = new APIFeatures(User.find(), req.query)
@@ -50,26 +59,19 @@ const createUser = (req, res, next) => {
   });
 };
 
-const filterObj = (obj, ...allowedFields) => {
-  const newObj = {};
-  Object.keys(obj).forEach(el => {
-    if (allowedFields.includes(el)) newObj[el] = obj[el];
-  });
-  return newObj;
-};
 
 const updateUserProfile = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const id = req.user._id;
     let userUpdate = { ...req.body };
-    if (userUpdate.state) delete userUpdate.state;
+    // if (userUpdate.state) delete userUpdate.state;
 
     const oldUser = await User.findById(id);
 
 
-    if ((req.user._id.toString() !== oldUser._id._id.toString()) && (req.user.role !== "admin")) {
+    if (!oldUser) {
       return next(
-        new AppError("You cannot update as you're not the owner", 403)
+        new AppError("User not found", 404)
       );
     }
 

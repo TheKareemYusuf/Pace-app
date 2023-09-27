@@ -6,6 +6,13 @@ const restrictToMW = require("./../authentication/restrictionHandler");
 
 const router = express.Router();
 
+// router
+//   .route("/update-profile")
+//   .put(
+//     passport.authenticate("jwt", { session: false }),
+//     userController.updateUserProfile
+//   );
+
 router
   .route("/")
   .get(
@@ -26,12 +33,12 @@ router
     restrictToMW.restrictTo("admin"),
     userController.getUser
   )
-  .put(
-    UserValidationMW,
-    passport.authenticate("jwt", { session: false }),
-    restrictToMW.restrictTo("admin"),
-    userController.updateUserProfile
-  )
+  // .put(
+  //   UserValidationMW,
+  //   passport.authenticate("jwt", { session: false }),
+  //   restrictToMW.restrictTo("admin"),
+  //   userController.updateUserProfile
+  // )
   .patch(
     UserValidationMW,
     passport.authenticate("jwt", { session: false }),
