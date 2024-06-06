@@ -82,13 +82,13 @@ const updateUserProfile = async (req, res, next) => {
           400
         )
       );
-    }
+    } 
 
     // 2) Filtered out unwanted fields names that are not allowed to be updated
-    // const filteredBody = filterObj(userUpdate, "phoneNumber");
+    const filteredBody = filterObj(userUpdate, "firstName", "lastName", "subjectOfInterest", "gender", "email", "phoneNumber", "username" )
 
     // 3) Update user document
-    const updatedUser = await User.findByIdAndUpdate(id, userUpdate, {
+    const updatedUser = await User.findByIdAndUpdate(id, filteredBody, {
       new: true,
       runValidators: true,
       context: "query"

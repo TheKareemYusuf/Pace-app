@@ -2,10 +2,10 @@ const express = require("express");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const CONFIG = require("./../config/config");
+const UserValidationMW = require("./../validators/user.validation");
 
 const authRouter = express.Router();
 
-const UserValidationMW = require("./../validators/user.validation");
 
 authRouter.post(
   "/signup", 

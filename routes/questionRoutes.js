@@ -34,7 +34,7 @@ router
   .patch(
     passport.authenticate("jwt", { session: false }),
     restrictToMW.restrictTo("admin"),
-    questionController.updateQuestionState
+    questionController.updateQuestionState 
   )
   .delete(
     passport.authenticate("jwt", { session: false }),

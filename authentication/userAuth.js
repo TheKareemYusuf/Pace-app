@@ -80,5 +80,5 @@ passport.use(
     } catch (error) {
       return next(error);
     }
-  })
+  }) 
 );
