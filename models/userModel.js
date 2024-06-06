@@ -31,10 +31,10 @@ const UserSchema = new mongoose.Schema({
   },
   username: {
     type: String,
-    // unique: true,
-    // sparse: true,
+    unique: true,
+    sparse: true,
     // required: [true, "username is compulsory"],
-    // match: /^[a-zA-Z]+[a-zA-Z0-9]*$/,
+    match: /^[a-zA-Z]+[a-zA-Z0-9]*$/,
     // The regex pattern ^[a-zA-Z]+[a-zA-Z0-9]*$ ensures that the username
     // starts with an alphabet, followed by alphanumeric characters (if any).
     // The + sign indicates one or more occurrences, and the * sign indicates
