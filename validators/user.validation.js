@@ -26,7 +26,7 @@ const UserSchema = Joi.object({
   levelOfStudy: Joi.string(),
   department: Joi.string().valid("arts", "sciences", "commercials").optional(),
   subjectOfInterest: Joi.array().items(Joi.string()),
-
+  dateOfBirth: Joi.date().less('now'),
 
   // bankDetails: {
   //   bankName: Joi.string().min(2).max(50).optional(),

@@ -7,8 +7,11 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateFieldsDB = (err) => {
-  const getKeyIdentifier = Object.keys(err.keyPattern)[0]
-  const message = `${getKeyIdentifier} already exists!`;
+  const getKeyIdentifier = Object.keys(err.keyPattern)[0];
+  let message = `${getKeyIdentifier} already exists!`;
+  if (getKeyIdentifier === "phoneNumber") {
+    message = `Phone number already exists!`;
+  }
   return new AppError(message, 409);
 };
 
