@@ -37,6 +37,7 @@ passport.use(
         phoneNumber,
         gender,
         department,
+        role
       } = req.body;
       const user = await Creator.create({
         email,
@@ -47,6 +48,7 @@ passport.use(
         phoneNumber,
         gender,
         department,
+        role
       });
 
       return next(null, user);

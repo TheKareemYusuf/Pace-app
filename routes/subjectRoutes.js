@@ -8,37 +8,32 @@ const router = express.Router();
 
 router
   .route("/")
-//   .get(
-//     passport.authenticate("jwt", { session: false }),
-//     questionController.getAllQuestions
-//   )
+  .get(
+    passport.authenticate("jwt", { session: false }),
+    subjectController.getAllSubjects
+  )
   .post(
     passport.authenticate("jwt", { session: false }),
     restrictToMW.restrictTo('admin'),
-    SubjectValidationMW,
+    // SubjectValidationMW,
     subjectController.createSubject
   );
 
-// router
-//   .route("/:id")
-//   .get(
-//     passport.authenticate("jwt", { session: false }),
-//     questionController.getQuestion
-//   )
-//   .put(
-//     passport.authenticate("jwt", { session: false }),
-//     // restrictToMW.restrictTo('admin'),
-//     questionController.updateQuestion
-//   )
-//   .patch(
-//     passport.authenticate("jwt", { session: false }),
-//     restrictToMW.restrictTo("admin"),
-//     questionController.updateQuestionState
-//   )
-//   .delete(
-//     passport.authenticate("jwt", { session: false }),
-//     restrictToMW.restrictTo("admin"),
-//     questionController.deleteQuestion
-//   );
+router
+  .route("/:id")
+  .get(
+    passport.authenticate("jwt", { session: false }),
+    subjectController.getSubject
+  )
+  .put(
+    passport.authenticate("jwt", { session: false }),
+    restrictToMW.restrictTo('admin'),
+    subjectController.updateSubject
+  )
+  .delete(
+    passport.authenticate("jwt", { session: false }),
+    restrictToMW.restrictTo("admin"),
+    subjectController.deleteSubject
+  );
 
 module.exports = router;
