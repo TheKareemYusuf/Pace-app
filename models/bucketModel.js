@@ -34,7 +34,7 @@ BucketSchema.pre("save", function(next) {
     { userId: doc.userId, subject: doc.subject },
     null,
     { sort: { batchNumber: -1 }, limit: 1 },
-    function(err, bucket) {
+    function(err, bucket) { 
       if (err) {
         return next(err);
       }

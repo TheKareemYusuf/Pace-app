@@ -4,7 +4,7 @@ const APIFeatures = require("./../utils/apiFeatures");
 const User = require("./../models/userModel");
 const Bucket = require("../models/bucketModel");
 
-// Get all questions
+// Get all questions 
 const getAllPracticeQuestions = async (req, res, next) => {
   try {
     // grab the id of the person hitting the route from req.body

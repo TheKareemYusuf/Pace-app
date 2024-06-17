@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.route("/check-answer").post(
   passport.authenticate("jwt", { session: false }),
-  checkAnswerController.checkAnswer
+  activityController.checkAnswer
 )
 
 router
