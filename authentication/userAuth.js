@@ -75,8 +75,9 @@ passport.use(
       if (!validate) {
         return next(null, false, { message: "Wrong Password" });
       }
+          const profileComplete = user.isProfileComplete();
 
-      return next(null, user, { message: "Logged in Successfully" });
+      return next(null, user, profileComplete, { message: "Logged in Successfully" });
     } catch (error) {
       return next(error);
     }

@@ -62,9 +62,14 @@ authRouter.post("/login", async (req, res, next) => {
         // Save the JWT in the session
         req.session.token = token;
 
+        const profileComplete = user.isProfileComplete();
+
+
         return res.json({
           username: user.username,
           phoneNumber: user.phoneNumber,
+          isProfileComplete: profileComplete,
+
           token,
         });
       });
