@@ -6,14 +6,6 @@ const restrictToMW = require("./../authentication/restrictionHandler");
 
 const router = express.Router();
 
-// router
-//   .route("/update-profile")
-//   .put(
-//     passport.authenticate("jwt", { session: false }),
-//     userController.updateUserProfile
-//   );
-
-
 
 router
   .route("/")
