@@ -18,8 +18,11 @@ router
   .patch(
     UserValidationMW,
     passport.authenticate("jwt", { session: false }),
-    userController.updateUserProfile
+    userController.updateProfileByUser
   );
+
+router.route("/check-email").post(
+  passport.authenticate("jwt", { session: false }), userController.checkEmailAvailability)
 
 
 

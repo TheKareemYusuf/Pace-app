@@ -3,6 +3,8 @@ const AppError = require("../utils/appError");
 const APIFeatures = require("./../utils/apiFeatures");
 const Creator = require("./../models/creatorModel");
 const uploadPicture = require('./../utils/multerImageHandler');
+const Notification = require('../models/notificationModel');
+
 // const multer = require("multer");
 // const sharp = require("sharp");
 const {
@@ -128,7 +130,7 @@ const getQuestion = async (req, res, next) => {
     const question = await Question.findById(id);
 
     if (!question) {
-      return next(new AppError("Question with the ID not found", 404));
+      return next(new AppError("Question not found", 404));
     }
 
     res.status(200).json({
@@ -180,6 +182,23 @@ const updateQuestionState = async (req, res, next) => {
 
     if (!question) {
       return next(new AppError("Question not found", 404));
+    }
+
+    // Notify the creator if the question is approved or rejected
+    if (state.toLowerCase() === 'approved') {
+      await Notification.create({
+        userId: question.creatorId,
+        userType: 'Creator',
+        message: `Your question has been approved!`,
+        link: `/questions/${id}`
+      });
+    } else if (state.toLowerCase() === 'rejected') {
+      await Notification.create({
+        userId: question.creatorId,
+        userType: 'Creator',
+        message: `Your question has been rejected.`,
+        link: `/questions/${id}`
+      });
     }
 
     res.status(200).json({

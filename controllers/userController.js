@@ -60,7 +60,7 @@ const createUser = (req, res, next) => {
 };
 
 
-const updateUserProfile = async (req, res, next) => {
+const updateProfileByUser = async (req, res, next) => {
   try {
     const id = req.user._id;
     let userUpdate = { ...req.body };
@@ -105,19 +105,84 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
+const updateUserProfile = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    let userUpdate = { ...req.body };
+    // if (userUpdate.state) delete userUpdate.state;
+
+    const oldUser = await User.findById(id);
+
+
+    if (!oldUser) {
+      return next(
+        new AppError("User not found", 404)
+      );
+    }
+
+    if (req.body.password || req.body.passwordConfirm) {
+      return next(
+        new AppError(
+          "This route is not for password updates. Please use /updateMyPassword.",
+          400
+        )
+      );
+    } 
+
+    // 2) Filtered out unwanted fields names that are not allowed to be updated
+    const filteredBody = filterObj(userUpdate, "firstName", "lastName", "subjectOfInterest", "gender", "email", "phoneNumber", "username", "dateOfBirth", "department", "levelOfStudy" )
+
+    // 3) Update user document
+    const updatedUser = await User.findByIdAndUpdate(id, filteredBody, {
+      new: true,
+      runValidators: true,
+      context: "query"
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        user: updatedUser,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const checkEmailAvailability = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return next(new AppError("Email is required", 400));
+    }
+
+    const user = await User.findOne({ email });
+
+    if (user) {
+      return res.status(200).json({
+        status: "success",
+        message: "email already exists",
+      })
+    } else {
+      res.status(200).json({
+        status: "success",
+        message: "email available",
+      });
+    }
+
+    
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 const updateUserStatus = async (req, res, next) => {
   try {
     let status = req.body.status;
     const id = req.params.id;
-
-    // const oldCreator = await Creator.findById(id);
-
-    // Checking if the user attempting to update is the author
-    // if (req.user._id.toString() !== oldQuestion.creatorId._id.toString()) {
-    //   return next(
-    //     new AppError("You cannot edit as you're not the author", 403)
-    //   );
-    // }
 
     if (
       !(
@@ -177,6 +242,8 @@ module.exports = {
   getUser,
   createUser,
   updateUserStatus,
+  updateProfileByUser,
   updateUserProfile,
   deleteUser,
+  checkEmailAvailability,
 };

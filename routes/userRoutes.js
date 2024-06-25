@@ -13,6 +13,8 @@ const router = express.Router();
 //     userController.updateUserProfile
 //   );
 
+
+
 router
   .route("/")
   .get(
@@ -38,7 +40,7 @@ router
   //   passport.authenticate("jwt", { session: false }),
   //   restrictToMW.restrictTo("admin"),
   //   userController.updateUserProfile
-  // )
+  // ) 
   .patch(
     UserValidationMW,
     passport.authenticate("jwt", { session: false }),

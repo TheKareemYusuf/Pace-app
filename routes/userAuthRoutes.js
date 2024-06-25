@@ -3,12 +3,13 @@ const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const CONFIG = require("./../config/config");
 const UserValidationMW = require("./../validators/user.validation");
+const userController = require("./../controllers/userController")
 
 const authRouter = express.Router();
 
 
 authRouter.post(
-  "/signup", 
+  "/signup",
   UserValidationMW,
   passport.authenticate("user-signup", { session: false }),
   async (req, res, next) => {
@@ -78,5 +79,7 @@ authRouter.post("/login", async (req, res, next) => {
     }
   })(req, res, next);
 });
+
+
 
 module.exports = authRouter;
